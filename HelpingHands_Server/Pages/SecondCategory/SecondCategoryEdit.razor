@@ -1,0 +1,88 @@
+﻿@* @page "/country/update/{id:int}"
+@inject IJSRuntime _jsRuntime
+@inject ICountryService _countryService
+@inject NavigationManager _navigationManager
+@inject IMapper _mapper *@
+@* @attribute [Authorize] *@
+@* 
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Update Country</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="Country" OnValidSubmit="UpdateCountry">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Country Name</label>
+                    <InputText @bind-Value="Country.CountryName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Country.CountryName"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="Country.IsActive" class="form-check-input" checked></InputCheckbox>
+                        <label class="form-check-label">Is Active</label>
+                    </div>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Create</button>
+                    <NavLink href="country" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private CountryUpdateDTO Country { get; set; } = new CountryUpdateDTO();
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCountry();
+        }
+    }
+    private async Task LoadCountry()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _countryService.GetAsync<APIResponse>(Id);
+        if (response != null && response.IsSuccess)
+        {
+            Country = JsonConvert.DeserializeObject<CountryUpdateDTO>(Convert.ToString(response.Result));
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpdateCountry()
+    {
+        var response = await _countryService.UpdateAsync<APIResponse>(Country);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Country update sucessfully.");
+            _navigationManager.NavigateTo("country");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+    }
+}
+ *@
