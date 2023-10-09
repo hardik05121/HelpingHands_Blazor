@@ -15,7 +15,7 @@ namespace HelpingHands_Models
         public string CompanyName { get; set; }
 
         [DisplayName("company logo")]
-        public string CompanyLogo { get; set; }
+        public string? CompanyLogo { get; set; }
 
         [Required]
         [DisplayName("firstcategory name")]

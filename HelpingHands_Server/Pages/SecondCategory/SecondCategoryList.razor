@@ -1,6 +1,7 @@
 ﻿@page "/secondcategory"
 @using HelpingHands_Models.Index;
 @inject ISecondCategoryService _secondCategoryService
+@inject ISecondCategoryUpload _secondCategoryUpload
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
 @* @using HelpingHands_Common
@@ -35,7 +36,7 @@
             <thead>
                 <tr>
                     <th>
-                        <a @onclick="Pagination">FirstCategory Name<i class="bi bi-arrow-down-up"></i></a>
+                        <a @onclick="Pagination">SecondCategory Name<i class="bi bi-arrow-down-up"></i></a>
                     </th>
                     <th>
                         FirstCategory Name
@@ -131,6 +132,7 @@
 {
     // private APIResponse APIResponse { get; set; } = new APIResponse();
     private SecondCategoryIndexVM secondCategoryIndexVM { get; set; } = new SecondCategoryIndexVM();
+    private SecondCategoryDTO SecondCategory { get; set; } = new SecondCategoryDTO();
     public bool IsLoading { get; set; }
     private int DeleteId { get; set; } = 0;
     private string term = "";
@@ -169,23 +171,32 @@
         IsLoading = true;
         if (isConfirmed && DeleteId != 0)
         {
+            var res = await _secondCategoryService.GetAsync<APIResponse>(DeleteId);
+            if (res != null && res.IsSuccess)
+            {
+                SecondCategory = JsonConvert.DeserializeObject<SecondCategoryDTO>(Convert.ToString(res.Result));
+            }
+            if (!SecondCategory.SecondCategoryImage.Contains("default.png"))
+            {
+                _secondCategoryUpload.DeleteFile(SecondCategory.SecondCategoryImage);
+            }
             try
             {
                 var response = await _secondCategoryService.DeleteAsync<APIResponse>(DeleteId);
                 if (response != null && response.IsSuccess)
                 {
-                    await _jsRuntime.ToastrSuccess("Data secondcategory sucessfully.");
+                    await _jsRuntime.ToastrSuccess("Data delete sucessfully.");
                     await LoadCategories(term, orderBy, currentPage);
                     await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 await _jsRuntime.ToastrError(e.Message);
                 await LoadCategories(term, orderBy, currentPage);
                 await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
             }
-          
+
         }
         IsLoading = false;
     }

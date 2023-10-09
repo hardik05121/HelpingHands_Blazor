@@ -31,4 +31,8 @@
     <ProjectReference Include="..\HelpingHands_Models\HelpingHands_Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\firstcategory\" />
+  </ItemGroup>
+
 </Project>

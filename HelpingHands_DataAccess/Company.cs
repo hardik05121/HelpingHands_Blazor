@@ -20,7 +20,7 @@ namespace HelpingHands_DataAccess
         public FirstCategory FirstCategory { get; set; }
 
         [ForeignKey("SecondCategory")]
-        public int? SecondCategoryId { get; set; }
+        public int SecondCategoryId { get; set; }
         [ValidateNever]
         public SecondCategory SecondCategory { get; set; }
 
@@ -30,7 +30,7 @@ namespace HelpingHands_DataAccess
         public ThirdCategory ThirdCategory { get; set; }
 
         [DisplayName("Company Logo")]
-        public string CompanyLogo { get; set; }
+        public string? CompanyLogo { get; set; }
 
         [ForeignKey("City")]
         public int CityId { get; set; }

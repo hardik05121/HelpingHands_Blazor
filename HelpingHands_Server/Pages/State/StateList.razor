@@ -1,29 +1,32 @@
 ﻿@page "/state"
 @using HelpingHands_Models.Index;
 @inject IStateService _stateService
+@inject ICountryService _countryService
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
 @* @using HelpingHands_Common
  @attribute [Authorize(Roles = SD.Role_Admin)] *@
 
+
 <_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
-<div class="container p-4 border border-dark p-3">
+<div class="container p-4 border">
     <div class="row pb-2">
         <div class="col">
             <h4 class="text-primary">State List</h4>
         </div>
-        <div class="col-4 text-end pt-1">
-            <a href="country/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create State</a>
+        <div class="col text-end pt-1">
+            <NavLink href="@($"state/create")" class="btn-primary btn"><i class="bi bi-plus-square-fill"></i>Create State</NavLink>
+
         </div>
     </div>
 
 
     <div class="row pb-2">
-        <div class="d-flex">
-            <span class="col-2">
+        <div class="row">
+            <span class="col-md-2">
                 <input @bind="term" id="SearchBox" class="form-control" placeholder="Search by name" />
             </span>
-            <span class="col-2 pl-2">
+            <span class="col-md-2">
                 <button @onclick="Search" class="btn btn-primary">Search</button>
             </span>
         </div>
@@ -36,9 +39,6 @@
                 <tr>
                     <th>
                         <a @onclick="Pagination">State Name<i class="bi bi-arrow-down-up"></i></a>
-                    </th>
-                    <th>
-                        Country Name
                     </th>
 
                     <th>
@@ -53,11 +53,10 @@
                 {
                     <tr>
                         <td>@item.StateName</td>
-                        <td>@item.Country.CountryName</td>
                         <td>@item.IsActive</td>
 
                         <td>
-                            <NavLink href="@($"state/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
+                            <NavLink href="@($"state/edit/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
                             <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
                         </td>
                     </tr>
@@ -82,7 +81,7 @@
 
                 @for (int i = 1; i <= stateIndexVM.TotalPages; i++)
                 {
-                    var page = i;
+                    var page = i; // Capture the current value of i in a local variable for use inside the lambda expression
                     if (i == stateIndexVM.CurrentPage)
                     {
                         <li class="page-item">
@@ -133,7 +132,7 @@
     // private APIResponse APIResponse { get; set; } = new APIResponse();
     private StateIndexVM stateIndexVM { get; set; } = new StateIndexVM();
     public bool IsLoading { get; set; }
-    private int DeleteStateId { get; set; } = 0;
+    private int DeleteCountryId { get; set; } = 0;
     private string term = "";
     private string orderBy = "";
     private int currentPage = 1;
@@ -161,32 +160,32 @@
 
     private void HandleDelete(int id)
     {
-        DeleteStateId = id;
+        DeleteCountryId = id;
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
     public async Task ConfirmDelete_Click(bool isConfirmed)
     {
         IsLoading = true;
-        if (isConfirmed && DeleteStateId != 0)
+        if (isConfirmed && DeleteCountryId != 0)
         {
             try
             {
-                var response = await _stateService.DeleteAsync<APIResponse>(DeleteStateId);
+                var response = await _stateService.DeleteAsync<APIResponse>(DeleteCountryId);
                 if (response != null && response.IsSuccess)
                 {
-                    await _jsRuntime.ToastrSuccess("Data State sucessfully.");
+                    await _jsRuntime.ToastrSuccess("Data delete sucessfully.");
                     await LoadCategories(term, orderBy, currentPage);
                     await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 await _jsRuntime.ToastrError(e.Message);
                 await LoadCategories(term, orderBy, currentPage);
                 await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
             }
-          
+
         }
         IsLoading = false;
     }

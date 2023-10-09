@@ -9,7 +9,7 @@ namespace HelpingHands_Models
 
 
         [DisplayName("Company Name")]
-        public string CompanyName { get; set; }
+        public string? CompanyName { get; set; }
 
         [DisplayName("Company Logo")]
         public string CompanyLogo { get; set; }

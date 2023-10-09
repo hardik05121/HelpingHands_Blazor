@@ -1,0 +1,211 @@
+﻿@page "/amenity"
+@using HelpingHands_Models.Index;
+@inject IAmenityService _amenityService
+@inject IFirstCategoryService _firstCategoryService
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _NavigationManager
+@* @using HelpingHands_Common
+ @attribute [Authorize(Roles = SD.Role_Admin)] *@
+
+<_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
+<div class="container p-4 border border-dark p-3">
+    <div class="row pb-2">
+        <div class="col">
+            <h4 class="text-primary">Amenity List</h4>
+        </div>
+        <div class="col-4 text-end pt-1">
+            <a href="amenity/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create Amenity</a>
+        </div>
+    </div>
+
+
+    <div class="row pb-2">
+        <div class="d-flex">
+            <span class="col-2">
+                <input @bind="term" id="SearchBox" class="form-control" placeholder="Search by name" />
+            </span>
+            <span class="col-2 pl-2">
+                <button @onclick="Search" class="btn btn-primary">Search</button>
+            </span>
+        </div>
+    </div>
+
+    @if (amenityIndexVM.amenities.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a @onclick="Pagination">Amenity Name<i class="bi bi-arrow-down-up"></i></a>
+                    </th>
+                    <th>
+                        First Category
+                    </th>
+                    <th>
+                        Is Active
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in amenityIndexVM.amenities)
+                {
+                    <tr>
+                        <td>@item.AmenityName</td>
+                        <td>@item.FirstCategory.FirstCategoryName</td>
+                        <td>@item.IsActive</td>
+
+                        <td>
+                            <NavLink href="@($"amenity/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
+                            <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+
+                @if (amenityIndexVM.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" @onclick="() => HandlePageClick(amenityIndexVM.Term, amenityIndexVM.OrderBy, amenityIndexVM.CurrentPage-1)" aria-label="Previous">
+
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= amenityIndexVM.TotalPages; i++)
+                {
+                    var page = i;
+                    if (i == amenityIndexVM.CurrentPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link active bg-primary" style="color: white;" @onclick="() => HandlePageClick(amenityIndexVM.Term, amenityIndexVM.OrderBy, page)">@i</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" @onclick="() => HandlePageClick(amenityIndexVM.Term, amenityIndexVM.OrderBy, page)">@i</a>
+                        </li>
+                    }
+                }
+
+                @if (amenityIndexVM.CurrentPage < amenityIndexVM.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" @onclick="() => HandlePageClick(amenityIndexVM.Term, amenityIndexVM.OrderBy, amenityIndexVM.CurrentPage+1)" aria-label="Next">
+
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+    else
+    {
+        if (IsLoading)
+        {
+            //loading gif
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            //no records
+            <p>No recrods found.</p>
+        }
+    }
+</div>
+
+
+
+@code
+{
+    // private APIResponse APIResponse { get; set; } = new APIResponse();
+    private AmenityIndexVM amenityIndexVM { get; set; } = new AmenityIndexVM();
+    public bool IsLoading { get; set; }
+    private int DeleteId { get; set; } = 0;
+    private string term = "";
+    private string orderBy = "";
+    private int currentPage = 1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCategories(term, orderBy, currentPage);
+        }
+    }
+
+    private async Task LoadCategories(string term, string orderBy, int currentPage)
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _amenityService.AmenityByPagination<APIResponse>(term, orderBy, currentPage);
+        if (response != null && response.IsSuccess)
+        {
+            amenityIndexVM = JsonConvert.DeserializeObject<AmenityIndexVM>(Convert.ToString(response.Result));
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private void HandleDelete(int id)
+    {
+        DeleteId = id;
+        _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
+    }
+
+    public async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsLoading = true;
+        if (isConfirmed && DeleteId != 0)
+        {
+            try
+            {
+                var response = await _amenityService.DeleteAsync<APIResponse>(DeleteId);
+                if (response != null && response.IsSuccess)
+                {
+                    await _jsRuntime.ToastrSuccess("Data first category sucessfully.");
+                    await LoadCategories(term, orderBy, currentPage);
+                    await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+                }
+            }
+            catch (Exception e)
+            {
+                await _jsRuntime.ToastrError(e.Message);
+                await LoadCategories(term, orderBy, currentPage);
+                await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+            }
+
+        }
+        IsLoading = false;
+    }
+
+    private async Task HandlePageClick(string term, string orderBy, int currentPage)
+    {
+        this.term = term;
+        this.orderBy = orderBy;
+        this.currentPage = currentPage;
+        await LoadCategories(term, orderBy, currentPage);
+    }
+    private async Task Search()
+    {
+        this.currentPage = 1;
+        await LoadCategories(term, orderBy, currentPage);
+    }
+    private async Task Pagination()
+    {
+        this.orderBy = amenityIndexVM.NameSortOrder;
+        await LoadCategories(term, orderBy, currentPage);
+    }
+}

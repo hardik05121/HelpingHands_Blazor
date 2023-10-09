@@ -52,10 +52,10 @@
     {
         if (firstRender)
         {
-            await LoadCountry();
+            await LoadData();
         }
     }
-    private async Task LoadCountry()
+    private async Task LoadData()
     {
         IsLoading = true;
         StateHasChanged();

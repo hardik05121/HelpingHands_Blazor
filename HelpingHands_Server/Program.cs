@@ -1,12 +1,17 @@
+using HelpingHands_Server.ImageService;
+using HelpingHands_Server.ImageService.IImageService;
 using HelpingHands_Server.Service;
 using HelpingHands_Server.Service.IService;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Syncfusion.Blazor;
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NTQ2OTEyQDMxMzkyZTMzMmUzMEtudFBaUUtCOVBjV0JnMTRZV0tMZEYxMnAyN2R3RFJ3WVhHWVRGeFJGSk09");
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSyncfusionBlazor();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -56,9 +61,14 @@ builder.Services.AddScoped<IApplicationRoleService, ApplicationRoleService>();
 builder.Services.AddHttpClient<IApplicationUserRoleService, ApplicationUserRoleService>();
 builder.Services.AddScoped<IApplicationUserRoleService, ApplicationUserRoleService>();
 
-//builder.Services.AddHttpClient<IFileUpload, FileUpload>();
-//builder.Services.AddScoped<IFileUpload, FileUpload>();
-
+builder.Services.AddHttpClient<IFirstCategoryUpload, FirstCategoryUpload>();
+builder.Services.AddScoped<IFirstCategoryUpload, FirstCategoryUpload>();
+builder.Services.AddHttpClient<ISecondCategoryUpload, SecondCategoryUpload>();
+builder.Services.AddScoped<ISecondCategoryUpload, SecondCategoryUpload>();
+builder.Services.AddHttpClient<IThirdCategoryUpload, ThirdCategoryUpload>();
+builder.Services.AddScoped<IThirdCategoryUpload, ThirdCategoryUpload>();
+builder.Services.AddHttpClient<ICompanyUpload, CompanyUpload>();
+builder.Services.AddScoped<ICompanyUpload, CompanyUpload>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //builder.Services.AddSession(options =>

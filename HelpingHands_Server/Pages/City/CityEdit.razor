@@ -1,0 +1,146 @@
+﻿@page "/city/update/{id:int}"
+@inject IJSRuntime _jsRuntime
+@inject ICityService _cityService
+@inject IStateService _stateService
+@inject ICountryService _countryService
+@inject NavigationManager _navigationManager
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Update City</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="City" OnValidSubmit="CityUpdate">
+                <DataAnnotationsValidator />
+                @*<ValidationSummary/>*@
+                <div class="form-group">
+                    <label>City Name</label>
+                    <InputText @bind-Value="City.CityName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>City.CityName"></ValidationMessage>
+                </div>
+
+                <div class="form-group col-6">
+                    <label>State Name</label>
+                    <InputSelect @bind-Value="City.StateId" class="form-select">
+                        <option value="0" disabled="disabled" selected>--Select State--</option>
+                        @foreach (var cat in StateList)
+                        {
+                            <option value="@cat.Id">@cat.StateName</option>
+                        }
+
+                    </InputSelect>
+                    <ValidationMessage For="()=>City.StateId"></ValidationMessage>
+                </div>
+
+                <div class="form-group col-6">
+                    <label>Country Name</label>
+                    <InputSelect @bind-Value="City.CountryId" class="form-select">
+                        <option value="0" disabled="disabled" selected>--Select Country--</option>
+                        @foreach (var cat in CountryList)
+                        {
+                            <option value="@cat.Id">@cat.CountryName</option>
+                        }
+
+                    </InputSelect>
+                    <ValidationMessage For="()=>City.CountryId"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="City.IsActive" class="form-check-input" checked></InputCheckbox>
+                        <label class="form-check-label">Is Active</label>
+                    </div>
+                </div>
+                @* <div class="form-group col-6">
+            <div class="form-check">
+            <InputCheckbox @bind-Value="Brand.IsActive" class="form-check-input" checked></InputCheckbox>
+            <label class="form-check-label">Is Active</label>
+            </div>
+            </div> *@
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Update</button>
+                    <NavLink href="state" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private CityUpdateDTO City { get; set; } = new CityUpdateDTO();
+    private List<StateDTO> StateList { get; set; } = new List<StateDTO>();
+
+    private List<CountryDTO> CountryList { get; set; } = new List<CountryDTO>();
+    // private CountryDTO CountryDTO { get; set; } = new CountryDTO();
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCountry();
+        }
+    }
+    private async Task LoadCountry()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _cityService.GetAsync<APIResponse>(Id);
+        if (response != null && response.IsSuccess)
+        {
+            City = JsonConvert.DeserializeObject<CityUpdateDTO>(Convert.ToString(response.Result));
+
+
+        }
+
+        var respons = await _stateService.GetAllAsync<APIResponse>();
+        if (respons != null && respons.IsSuccess)
+        {
+            StateList = JsonConvert.DeserializeObject<List<StateDTO>>(Convert.ToString(respons.Result));
+        }
+
+        var response1 = await _countryService.GetAllAsync<APIResponse>();
+        if (response1 != null && response1.IsSuccess)
+        {
+            CountryList = JsonConvert.DeserializeObject<List<CountryDTO>>(Convert.ToString(response1.Result));
+        }
+
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task CityUpdate()
+    {
+        var response = await _cityService.UpdateAsync<APIResponse>(City);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("City Update sucessfully.");
+            _navigationManager.NavigateTo("state");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+
+    }
+
+
+
+
+
+}

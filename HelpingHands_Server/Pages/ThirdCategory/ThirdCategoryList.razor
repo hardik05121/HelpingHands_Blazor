@@ -1,6 +1,7 @@
 ﻿@page "/thirdcategory"
 @using HelpingHands_Models.Index;
 @inject IThirdCategoryService _thirdCategoryService
+@inject IThirdCategoryUpload _thirdCategoryUpload
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
 @* @using HelpingHands_Common
@@ -10,10 +11,10 @@
 <div class="container p-4 border border-dark p-3">
     <div class="row pb-2">
         <div class="col">
-            <h4 class="text-primary">FirstCategory List</h4>
+            <h4 class="text-primary">ThirdCategory List</h4>
         </div>
         <div class="col-4 text-end pt-1">
-            <a href="thirdcategory/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create FirstCategory</a>
+            <a href="thirdcategory/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create ThirdCategory</a>
         </div>
     </div>
 
@@ -35,16 +36,16 @@
             <thead>
                 <tr>
                     <th>
-                        <a @onclick="Pagination">FirstCategory Name<i class="bi bi-arrow-down-up"></i></a>
-                    </th>
-                    <th>
-                        Is Active
+                        <a @onclick="Pagination">ThirdCategory Name<i class="bi bi-arrow-down-up"></i></a>
                     </th>
                     <th>
                         FirstCategory Name
                     </th>
                     <th>
                         SecondCategory Name
+                    </th>
+                    <th>
+                        Is Active
                     </th>
                     <th></th>
                 </tr>
@@ -135,6 +136,7 @@
 {
     // private APIResponse APIResponse { get; set; } = new APIResponse();
     private ThirdCategoryIndexVM thirdCategoryIndexVM { get; set; } = new ThirdCategoryIndexVM();
+    private ThirdCategoryDTO ThirdCategory { get; set; } = new ThirdCategoryDTO();
     public bool IsLoading { get; set; }
     private int DeleteId { get; set; } = 0;
     private string term = "";
@@ -173,6 +175,15 @@
         IsLoading = true;
         if (isConfirmed && DeleteId != 0)
         {
+            var res = await _thirdCategoryService.GetAsync<APIResponse>(DeleteId);
+            if (res != null && res.IsSuccess)
+            {
+                ThirdCategory = JsonConvert.DeserializeObject<ThirdCategoryDTO>(Convert.ToString(res.Result));
+            }
+            if (!ThirdCategory.ThirdCategoryImage.Contains("default.png"))
+            {
+                _thirdCategoryUpload.DeleteFile(ThirdCategory.ThirdCategoryImage);
+            }
             try
             {
                 var response = await _thirdCategoryService.DeleteAsync<APIResponse>(DeleteId);

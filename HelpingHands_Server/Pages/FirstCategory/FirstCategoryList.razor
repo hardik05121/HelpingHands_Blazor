@@ -3,6 +3,7 @@
 @inject IFirstCategoryService _firstCategoryService
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
+@inject IFirstCategoryUpload _firstCategoryUpload
 @* @using HelpingHands_Common
  @attribute [Authorize(Roles = SD.Role_Admin)] *@
 
@@ -127,6 +128,7 @@
 {
     // private APIResponse APIResponse { get; set; } = new APIResponse();
     private FirstCategoryIndexVM firstCategoryIndexVM { get; set; } = new FirstCategoryIndexVM();
+    private FirstCategoryDTO FirstCategory { get; set; } = new FirstCategoryDTO();
     public bool IsLoading { get; set; }
     private int DeleteId { get; set; } = 0;
     private string term = "";
@@ -165,12 +167,21 @@
         IsLoading = true;
         if (isConfirmed && DeleteId != 0)
         {
+            var res = await _firstCategoryService.GetAsync<APIResponse>(DeleteId);
+            if (res != null && res.IsSuccess)
+            {
+                FirstCategory = JsonConvert.DeserializeObject<FirstCategoryDTO>(Convert.ToString(res.Result));
+            }
+            if (!FirstCategory.FirstCategoryImage.Contains("default.png"))
+            {
+                _firstCategoryUpload.DeleteFile(FirstCategory.FirstCategoryImage);
+            }
             try
             {
                 var response = await _firstCategoryService.DeleteAsync<APIResponse>(DeleteId);
                 if (response != null && response.IsSuccess)
                 {
-                    await _jsRuntime.ToastrSuccess("Data first category sucessfully.");
+                    await _jsRuntime.ToastrSuccess("Data delete sucessfully.");
                     await LoadCategories(term, orderBy, currentPage);
                     await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
                 }
