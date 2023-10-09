@@ -2,7 +2,7 @@
 {
     public class ServiceIndexVM
     {
-        public IEnumerable<ServiceDTO> services { get; set; }   
+        public IEnumerable<ServiceDTO> services { get; set; } = new List<ServiceDTO>();
         public string NameSortOrder { get; set; }
         // public string EmailSortOrder { get; set; }
         public int PageSize { get; set; }

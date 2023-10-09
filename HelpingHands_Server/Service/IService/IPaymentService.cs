@@ -11,6 +11,6 @@ namespace HelpingHands_Server.Service.IService
             Task<T> CreateAsync<T>(PaymentCreateDTO dto);
             Task<T> UpdateAsync<T>(PaymentUpdateDTO dto);
             Task<T> DeleteAsync<T>(int id);
-        Task<T> PaymentByPagination<T>(string term, string orderBy, int currentPage);
+            Task<T> PaymentByPagination<T>(string term, string orderBy, int currentPage);
     }
 }

@@ -341,7 +341,7 @@ namespace HelpingHands_API.Controllers.v1
                     ModelState.AddModelError("ErrorMessages", "Company already Exists!");
                     return BadRequest(ModelState);
                 }
-                if (await _unitOfWork.FirstCategory.GetAsync(u => u.Id == updateDTO.FirstCategoryId && u.Id != updateDTO.Id) != null)
+                if (await _unitOfWork.FirstCategory.GetAsync(u => u.Id == updateDTO.FirstCategoryId) == null)
                 {
                     ModelState.AddModelError("ErrorMessages", "FirstCategory ID is Invalid!");
                     return BadRequest(ModelState);
@@ -357,6 +357,7 @@ namespace HelpingHands_API.Controllers.v1
                 //    return BadRequest(ModelState);
                 //}
                 Company model = _mapper.Map<Company>(updateDTO);
+                model.UpdatedDate = DateTime.Now;
                 await _unitOfWork.Company.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;

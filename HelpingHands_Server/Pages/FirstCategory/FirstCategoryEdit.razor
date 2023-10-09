@@ -1,12 +1,13 @@
-﻿@* @page "/country/update/{id:int}"
+﻿@page "/firstcategory/update/{id:int}"
 @inject IJSRuntime _jsRuntime
-@inject ICountryService _countryService
+@inject IFirstCategoryService _firstCategoryService
 @inject NavigationManager _navigationManager
-@inject IMapper _mapper *@
-@* @attribute [Authorize] *@
-@* 
+@inject IFirstCategoryUpload _firstCategoryUpload
+@inject IJSRuntime _jsRuntime
+@*  @attribute [Authorize]  *@
+
 <div class="row my-2">
-    <h3 class="card-title text-primary mb-3 ml-3">Update Country</h3>
+    <h3 class="card-title text-primary mb-3 ml-3">Update FirstCategory</h3>
 
     <div class="col-10">
         @if (IsLoading)
@@ -17,25 +18,46 @@
         }
         else
         {
-            <EditForm Model="Country" OnValidSubmit="UpdateCountry">
+            <EditForm Model="FirstCategory" OnValidSubmit="UpdateFirstCategory">
                 <DataAnnotationsValidator />
                 <div class="form-group">
-                    <label>Country Name</label>
-                    <InputText @bind-Value="Country.CountryName" class="form-control"></InputText>
-                    <ValidationMessage For="()=>Country.CountryName"></ValidationMessage>
+                    <label>FirstCategory Name</label>
+                    <InputText @bind-Value="FirstCategory.FirstCategoryName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>FirstCategory.FirstCategoryName"></ValidationMessage>
                 </div>
-                <div class="form-group col-6">
-                    <div class="form-check">
-                        <InputCheckbox @bind-Value="Country.IsActive" class="form-check-input" checked></InputCheckbox>
-                        <label class="form-check-label">Is Active</label>
+                <div class="row pt-3">
+                    @*  <div class="form-group col-6">
+                <label>Category</label>
+                <InputSelect @bind-Value="FirstCategory.Id" class="form-select">
+                <option value="0" disabled="disabled" selected>--Select Category--</option>
+                @foreach (var cat in fir)
+                {
+                <option value="@cat.Id">@cat.Name</option>
+                }
+
+                </InputSelect>
+                <ValidationMessage For="()=>FirstCategory.Id"></ValidationMessage>
+                </div> *@
+                    <div class="form-group">
+                        <InputFile OnChange="HandleImageUpload"></InputFile>
+                    </div>
+                    <div class="form-group col-6">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="FirstCategory.IsActive" class="form-check-input" checked></InputCheckbox>
+                            <label class="form-check-label">Is Active</label>
+                        </div>
                     </div>
                 </div>
+
                 <div class="form-group py-2">
-                    <button class="btn btn-primary">Create</button>
-                    <NavLink href="country" class="btn btn-secondary">Back to Index</NavLink>
+                    <button class="btn btn-primary">Update</button>
+                    <NavLink href="firstcategory" class="btn btn-secondary">Back to Index</NavLink>
                 </div>
             </EditForm>
         }
+    </div>
+    <div class="col-2">
+        <img src="@FirstCategory.FirstCategoryImage" class="w-100">
     </div>
 </div>
 
@@ -44,37 +66,49 @@
     [Parameter]
     public int Id { get; set; }
 
-    private CountryUpdateDTO Country { get; set; } = new CountryUpdateDTO();
+    private FirstCategoryUpdateDTO FirstCategory { get; set; } = new()
+        {
+            FirstCategoryImage = "/images/default.png"
+        };
+
     public bool IsLoading { get; set; }
+    public string OldImageUrl { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadCountry();
+            await LoadData();
         }
     }
-    private async Task LoadCountry()
+
+    private async Task LoadData()
     {
         IsLoading = true;
         StateHasChanged();
-        var response = await _countryService.GetAsync<APIResponse>(Id);
+        var response = await _firstCategoryService.GetAsync<APIResponse>(Id);
         if (response != null && response.IsSuccess)
         {
-            Country = JsonConvert.DeserializeObject<CountryUpdateDTO>(Convert.ToString(response.Result));
+            FirstCategory = JsonConvert.DeserializeObject<FirstCategoryUpdateDTO>(Convert.ToString(response.Result));
+            OldImageUrl = FirstCategory.FirstCategoryImage;
         }
         IsLoading = false;
         StateHasChanged();
     }
 
 
-    private async Task UpdateCountry()
+    private async Task UpdateFirstCategory()
     {
-        var response = await _countryService.UpdateAsync<APIResponse>(Country);
+        if (OldImageUrl != FirstCategory.FirstCategoryImage)
+        {
+            _firstCategoryUpload.DeleteFile(OldImageUrl);
+
+        }
+        var response = await _firstCategoryService.UpdateAsync<APIResponse>(FirstCategory);
         if (response != null && response.IsSuccess)
         {
-            await _jsRuntime.ToastrSuccess("Country update sucessfully.");
-            _navigationManager.NavigateTo("country");
+            await _jsRuntime.ToastrSuccess("Data update sucessfully.");
+            _navigationManager.NavigateTo("firstcategory");
         }
         else
         {
@@ -84,5 +118,35 @@
             }
         }
     }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        IsLoading = true;
+        try
+        {
+            if (e.GetMultipleFiles().Count > 0)
+            {
+                foreach (var file in e.GetMultipleFiles())
+                {
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+                    if (fileInfo.Extension.ToLower() == ".jpg" ||
+                      fileInfo.Extension.ToLower() == ".png" ||
+                      fileInfo.Extension.ToLower() == ".jpeg")
+                    {
+                        FirstCategory.FirstCategoryImage = await _firstCategoryUpload.UploadFile(file);
+                    }
+                    else
+                    {
+                        await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
+                        return;
+                    }
+                }
+            }
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ToastrError(ex.Message);
+        }
+    }
 }
- *@

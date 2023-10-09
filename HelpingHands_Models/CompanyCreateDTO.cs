@@ -12,7 +12,7 @@ namespace HelpingHands_Models
         public string CompanyName { get; set; }
 
         [DisplayName("Company Logo")]
-        public string CompanyLogo { get; set; }
+        public string? CompanyLogo { get; set; }
         public int FirstCategoryId { get; set; }
         public int? SecondCategoryId { get; set; }
         public int? ThirdCategoryId { get; set; }

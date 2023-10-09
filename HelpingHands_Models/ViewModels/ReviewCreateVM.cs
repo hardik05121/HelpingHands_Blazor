@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HelpingHands_Models.ViewModels
@@ -7,12 +8,17 @@ namespace HelpingHands_Models.ViewModels
     {
         public ReviewCreateVM()
         {
-            Review = new ReviewCreateDTO();
             Company = new CompanyCreateDTO();
+            Review = new ReviewCreateDTO();
         }
         public ReviewCreateDTO Review { get; set; }
         public CompanyCreateDTO Company { get; set; }
+
         [ValidateNever]
-        public IEnumerable<SelectListItem> CompanyList { get; set; }
+        public IEnumerable<SelectListItem> CountryList { get; set; }
+
+
+        [ValidateNever]
+        public List<ReviewDTO> ReviewList { get; set; }
     }
 }

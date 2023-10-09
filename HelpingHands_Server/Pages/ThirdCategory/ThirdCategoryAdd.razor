@@ -1,11 +1,16 @@
-﻿@* @page "/country/create"
+﻿@page "/thirdcategory/create"
+@using Microsoft.AspNetCore.Mvc.Rendering;
 @inject IJSRuntime _jsRuntime
-@inject ICountryService _countryService
+@inject IThirdCategoryService _thirdCategoryService
+@inject ISecondCategoryService _secondCategoryService
 @inject NavigationManager _navigationManager
- @attribute [Authorize] 
+@inject IFirstCategoryService _firstCategoryService
+@inject IThirdCategoryUpload _thirdCategoryUpload
+@inject IJSRuntime _jsRuntime
+@*  @attribute [Authorize]  *@
 
 <div class="row my-2">
-    <h3 class="card-title text-primary mb-3 ml-3">Create Country</h3>
+    <h3 class="card-title text-primary mb-3 ml-3">Create ThirdCategory</h3>
 
     <div class="col-10">
         @if (IsLoading)
@@ -16,25 +21,59 @@
         }
         else
         {
-            <EditForm Model="Country" OnValidSubmit="CreateCountry">
+            <EditForm Model="ThirdCategory" OnValidSubmit="CreateThirdCategory">
                 <DataAnnotationsValidator />
                 <div class="form-group">
-                    <label>Country Name</label>
-                    <InputText @bind-Value="Country.CountryName" class="form-control"></InputText>
-                    <ValidationMessage For="()=>Country.CountryName"></ValidationMessage>
+                    <label>ThirdCategory Name</label>
+                    <InputText @bind-Value="ThirdCategory.ThirdCategoryName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>ThirdCategory.ThirdCategoryName"></ValidationMessage>
                 </div>
-                <div class="form-group col-6">
-                    <div class="form-check">
-                        <InputCheckbox @bind-Value="Country.IsActive" class="form-check-input" checked></InputCheckbox>
-                        <label class="form-check-label">Is Active</label>
+                <div class="row pt-3">
+                    <div class="form-group col-6">
+                        <label>First Category</label>
+                        <InputSelect @bind-Value="ThirdCategory.FirstCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select FirstCategory--</option>
+                            @foreach (var cat in FirstCategory)
+                            {
+                                <option value="@cat.Id">@cat.FirstCategoryName</option>
+                            }
+
+                        </InputSelect>
+                        <ValidationMessage For="()=>ThirdCategory.FirstCategoryId"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Second Category</label>
+                        <InputSelect @bind-Value="ThirdCategory.SecondCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select SecondCategory--</option>
+                            @foreach (var cat in SecondCategory)
+                            {
+                                <option value="@cat.Id">@cat.SecondCategoryName</option>
+                            }
+
+                        </InputSelect>
+                        <ValidationMessage For="()=>ThirdCategory.SecondCategoryId"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>Image</label>
+                        <InputFile OnChange="HandleImageUpload"></InputFile>
+                    </div>
+                    <div class="form-group col-6">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="ThirdCategory.IsActive" class="form-check-input" checked></InputCheckbox>
+                            <label class="form-check-label">Is Active</label>
+                        </div>
                     </div>
                 </div>
+
                 <div class="form-group py-2">
                     <button class="btn btn-primary">Create</button>
-                    <NavLink href="country" class="btn btn-secondary">Back to Index</NavLink>
+                    <NavLink href="thirdcategory" class="btn btn-secondary">Back to Index</NavLink>
                 </div>
             </EditForm>
         }
+    </div>
+    <div class="col-2">
+        <img src="@ThirdCategory.ThirdCategoryImage" class="w-100">
     </div>
 </div>
 
@@ -43,25 +82,53 @@
     [Parameter]
     public int Id { get; set; }
 
-    private CountryCreateDTO Country { get; set; } = new CountryCreateDTO();
+    private ThirdCategoryCreateDTO ThirdCategory { get; set; } = new()
+        {
+            ThirdCategoryImage = "/images/default.png"
+        };
+
+    private IEnumerable<FirstCategoryDTO> FirstCategory { get; set; } = new List<FirstCategoryDTO>();
+    private IEnumerable<SecondCategoryDTO> SecondCategory { get; set; } = new List<SecondCategoryDTO>();
     public bool IsLoading { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            IsLoading = false;
+            await LoadData();
         }
     }
 
-   
-    private async Task CreateCountry()
+    private async Task LoadData()
     {
-        var response = await _countryService.CreateAsync<APIResponse>(Country);
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _firstCategoryService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            FirstCategory = JsonConvert.DeserializeObject<List<FirstCategoryDTO>>(
+                       Convert.ToString(response.Result));
+            FirstCategory = FirstCategory.OrderBy(i => i.FirstCategoryName).ToList();
+        }
+        var response1 = await _secondCategoryService.GetAllAsync<APIResponse>();
+        if (response1 != null && response1.IsSuccess)
+        {
+            SecondCategory = JsonConvert.DeserializeObject<List<SecondCategoryDTO>>(
+                       Convert.ToString(response1.Result));
+            SecondCategory = SecondCategory.OrderBy(i => i.SecondCategoryName).ToList();
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task CreateThirdCategory()
+    {
+        var response = await _thirdCategoryService.CreateAsync<APIResponse>(ThirdCategory);
         if (response != null && response.IsSuccess)
         {
             await _jsRuntime.ToastrSuccess("Data create sucessfully.");
-            _navigationManager.NavigateTo("country");
+            _navigationManager.NavigateTo("thirdcategory");
         }
         else
         {
@@ -70,7 +137,36 @@
                 await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
             }
         }
-        
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        IsLoading = true;
+        try
+        {
+            if (e.GetMultipleFiles().Count > 0)
+            {
+                foreach (var file in e.GetMultipleFiles())
+                {
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+                    if (fileInfo.Extension.ToLower() == ".jpg" ||
+                      fileInfo.Extension.ToLower() == ".png" ||
+                      fileInfo.Extension.ToLower() == ".jpeg")
+                    {
+                        ThirdCategory.ThirdCategoryImage = await _thirdCategoryUpload.UploadFile(file);
+                    }
+                    else
+                    {
+                        await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
+                        return;
+                    }
+                }
+            }
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ToastrError(ex.Message);
+        }
     }
 }
- *@

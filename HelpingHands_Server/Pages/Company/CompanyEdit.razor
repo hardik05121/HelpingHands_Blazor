@@ -1,0 +1,313 @@
+﻿@page "/company/update/{id:int}"
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@inject IJSRuntime _jsRuntime
+@inject ICompanyService _companyService
+@inject IThirdCategoryService _thirdCategoryService
+@inject ISecondCategoryService _secondCategoryService
+@inject IFirstCategoryService _firstCategoryService
+@inject ICountryService _countryService
+@inject IStateService _stateService
+@inject ICityService _cityService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
+@*  @attribute [Authorize]  *@
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Update Company</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="Company" OnValidSubmit="UpdateCompany">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <InputText @bind-Value="Company.CompanyName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Company.CompanyName"></ValidationMessage>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-4">
+                        <label>First Category</label>
+                        <InputSelect @bind-Value="Company.FirstCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select FirstCategory--</option>
+                            @foreach (var cat in FirstCategory)
+                            {
+                                <option value="@cat.Id">@cat.FirstCategoryName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.FirstCategoryId"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-4">
+                        <label>Second Category</label>
+                        <InputSelect @bind-Value="Company.SecondCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select SecondCategory--</option>
+                            @foreach (var cat in SecondCategory)
+                            {
+                                <option value="@cat.Id">@cat.SecondCategoryName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.SecondCategoryId"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-4">
+                        <label>Third Category</label>
+                        <InputSelect @bind-Value="Company.ThirdCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select ThirdCategory--</option>
+                            @foreach (var cat in ThirdCategory)
+                            {
+                                <option value="@cat.Id">@cat.ThirdCategoryName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.ThirdCategoryId"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-4">
+                        <label>Country</label>
+                        <InputSelect @bind-Value="Company.CountryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select Country--</option>
+                            @foreach (var cat in Country)
+                            {
+                                <option value="@cat.Id">@cat.CountryName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.CountryId"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-4">
+                        <label>State</label>
+                        <InputSelect @bind-Value="Company.StateId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select State--</option>
+                            @foreach (var cat in State)
+                            {
+                                <option value="@cat.Id">@cat.StateName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.StateId"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-4">
+                        <label>City</label>
+                        <InputSelect @bind-Value="Company.CityId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select City--</option>
+                            @foreach (var cat in City)
+                            {
+                                <option value="@cat.Id">@cat.CityName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>Company.CityId"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <SfRichTextEditor @bind-Value="Company.Address"></SfRichTextEditor>
+                    <ValidationMessage For="()=>Company.Address"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <SfRichTextEditor @bind-Value="Company.Description"></SfRichTextEditor>
+                    <ValidationMessage For="()=>Company.Description"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <label>Certificate</label>
+                    <InputText @bind-Value="Company.Certificate" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Company.Certificate"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <label>Establish Date</label>
+                    <InputDate @bind-Value="Company.EstablishDate" class="form-control"></InputDate>
+                    <ValidationMessage For="()=>Company.EstablishDate"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <label>Phone Number</label>
+                    <InputText @bind-Value="Company.PhoneNumber" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Company.PhoneNumber"></ValidationMessage>
+                </div>
+
+                <div class="form-group col-6">
+                    <label>Email</label>
+                    <InputText @bind-Value="Company.Email" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Company.Email"></ValidationMessage>
+                </div>
+
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <InputText @bind-Value="Company.WhatsApp" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                    <ValidationMessage For="()=>Company.WhatsApp"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Instagram</label>
+                    <InputText @bind-Value="Company.InstagramId" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                    <ValidationMessage For="()=>Company.InstagramId"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Facebook</label>
+                    <InputText @bind-Value="Company.Facebook" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                    <ValidationMessage For="()=>Company.Facebook"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <InputText @bind-Value="Company.Website" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                    <ValidationMessage For="()=>Company.Website"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Twitter</label>
+                    <InputText @bind-Value="Company.Twitter" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                    <ValidationMessage For="()=>Company.Twitter"></ValidationMessage>
+                </div>
+
+                <div class="form-group col-6">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="Company.IsActive" class="form-check-input" checked></InputCheckbox>
+                        <label class="form-check-label">Is Active</label>
+                    </div>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Create</button>
+                    <NavLink href="company" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private CompanyDTO Company { get; set; } = new CompanyDTO();
+    private IEnumerable<FirstCategoryDTO> FirstCategory { get; set; } = new List<FirstCategoryDTO>();
+    private IEnumerable<SecondCategoryDTO> SecondCategory { get; set; } = new List<SecondCategoryDTO>();
+    private IEnumerable<ThirdCategoryDTO> ThirdCategory { get; set; } = new List<ThirdCategoryDTO>();
+    private IEnumerable<CountryDTO> Country { get; set; } = new List<CountryDTO>();
+    private IEnumerable<StateDTO> State { get; set; } = new List<StateDTO>();
+    private IEnumerable<CityDTO> City { get; set; } = new List<CityDTO>();
+    public bool IsLoading { get; set; }
+    public string OldImageUrl { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var res = await _companyService.GetAsync<APIResponse>(Id);
+        if (res != null && res.IsSuccess)
+        {
+            Company = JsonConvert.DeserializeObject<CompanyDTO>(Convert.ToString(res.Result));
+        }
+        var response = await _firstCategoryService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            FirstCategory = JsonConvert.DeserializeObject<List<FirstCategoryDTO>>(
+                       Convert.ToString(response.Result));
+            FirstCategory = FirstCategory.OrderBy(i => i.FirstCategoryName).ToList();
+        }
+        var response1 = await _secondCategoryService.GetAllAsync<APIResponse>();
+        if (response1 != null && response1.IsSuccess)
+        {
+            SecondCategory = JsonConvert.DeserializeObject<List<SecondCategoryDTO>>(
+                       Convert.ToString(response1.Result));
+            SecondCategory = SecondCategory.OrderBy(i => i.SecondCategoryName).ToList();
+        }
+        var response2 = await _thirdCategoryService.GetAllAsync<APIResponse>();
+        if (response2 != null && response1.IsSuccess)
+        {
+            ThirdCategory = JsonConvert.DeserializeObject<List<ThirdCategoryDTO>>(
+                       Convert.ToString(response2.Result));
+            ThirdCategory = ThirdCategory.OrderBy(i => i.ThirdCategoryName).ToList();
+        }
+        var response3 = await _countryService.GetAllAsync<APIResponse>();
+        if (response3 != null && response3.IsSuccess)
+        {
+            Country = JsonConvert.DeserializeObject<List<CountryDTO>>(
+                       Convert.ToString(response3.Result));
+            Country = Country.OrderBy(i => i.CountryName).ToList();
+        }
+        var response4 = await _stateService.GetAllAsync<APIResponse>();
+        if (response4 != null && response4.IsSuccess)
+        {
+            State = JsonConvert.DeserializeObject<List<StateDTO>>(
+                       Convert.ToString(response4.Result));
+            State = State.OrderBy(i => i.StateName).ToList();
+        }
+        var response5 = await _cityService.GetAllAsync<APIResponse>();
+        if (response5 != null && response5.IsSuccess)
+        {
+            City = JsonConvert.DeserializeObject<List<CityDTO>>(
+                       Convert.ToString(response5.Result));
+            City = City.OrderBy(i => i.CityName).ToList();
+        }
+      
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpdateCompany()
+    {
+        // if (OldImageUrl != ThirdCategory.ThirdCategoryImage)
+        // {
+        //     _thirdCategoryUpload.DeleteFile(OldImageUrl);
+
+        // }
+        var response = await _companyService.UpdateAsync<APIResponse>(Company);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Data update sucessfully.");
+            _navigationManager.NavigateTo("country");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+    }
+
+    // private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    // {
+    //     IsLoading = true;
+    //     try
+    //     {
+    //         if (e.GetMultipleFiles().Count > 0)
+    //         if (e.GetMultipleFiles().Count > 0)
+    //         {
+    //             foreach (var file in e.GetMultipleFiles())
+    //             {
+    //                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+    //                 if (fileInfo.Extension.ToLower() == ".jpg" ||
+    //                   fileInfo.Extension.ToLower() == ".png" ||
+    //                   fileInfo.Extension.ToLower() == ".jpeg")
+    //                 {
+    //                     ThirdCategory.ThirdCategoryImage = await _thirdCategoryUpload.UploadFile(file);
+    //                 }
+    //                 else
+    //                 {
+    //                     await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
+    //                     return;
+    //                 }
+    //             }
+    //         }
+    //         IsLoading = false;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         await _jsRuntime.ToastrError(ex.Message);
+    //     }
+    // }
+}

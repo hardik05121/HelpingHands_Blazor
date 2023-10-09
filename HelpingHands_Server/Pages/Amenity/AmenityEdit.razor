@@ -1,0 +1,118 @@
+﻿@page "/amenity/update/{id:int}"
+@inject IJSRuntime _jsRuntime
+@inject IAmenityService _amenityService
+@inject IFirstCategoryService _firstCategoryService
+@inject NavigationManager _navigationManager
+@inject IMapper _mapper 
+@* @attribute [Authorize] *@
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Update Amenity</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="Amenity" OnValidSubmit="UpdateAmenity">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Amenity Name</label>
+                    <InputText @bind-Value="Amenity.AmenityName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>Amenity.AmenityName"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <label>Category</label>
+                    <InputSelect @bind-Value="Amenity.FirstCategoryId" class="form-select">
+                        <option value="0" disabled="disabled" selected>--Select Category--</option>
+                        @foreach (var cat in FirstCategory)
+                        {
+                            <option value="@cat.Id">@cat.FirstCategoryName</option>
+                        }
+
+                    </InputSelect>
+                    <ValidationMessage For="()=>Amenity.FirstCategoryId"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="Amenity.IsActive" class="form-check-input" checked></InputCheckbox>
+                        <label class="form-check-label">Is Active</label>
+                    </div>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Update</button>
+                    <NavLink href="amenity" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private AmenityUpdateDTO Amenity { get; set; } = new AmenityUpdateDTO();
+
+    private IEnumerable<FirstCategoryUpdateDTO> FirstCategory { get; set; } = new List<FirstCategoryUpdateDTO>();
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var respon = await _firstCategoryService.GetAllAsync<APIResponse>();
+        if (respon != null && respon.IsSuccess)
+        {
+            FirstCategory = JsonConvert.DeserializeObject<List<FirstCategoryUpdateDTO>>(Convert.ToString(respon.Result));
+            FirstCategory = FirstCategory.OrderBy(i => i.FirstCategoryName).ToList();
+        }
+        if (Id != 0)
+        {
+            //update
+            var response = await _amenityService.GetAsync<APIResponse>(Id);
+            if (response != null && response.IsSuccess)
+            {
+                Amenity = JsonConvert.DeserializeObject<AmenityUpdateDTO>(Convert.ToString(response.Result));
+            }
+
+        }
+
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpdateAmenity()
+    {
+        var response = await _amenityService.UpdateAsync<APIResponse>(Amenity);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Amenity update sucessfully.");
+            _navigationManager.NavigateTo("amenity");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+    }
+}
+ 
