@@ -27,6 +27,7 @@ namespace HelpingHands_Business.Mapper
             CreateMap<CompanyImage, CompanyImageUpdateDTO>().ReverseMap();
 
             CreateMap<Company, CompanyDTO>().ReverseMap();
+            CreateMap<CompanyCreateDTO, CompanyDTO>().ReverseMap();
             CreateMap<Company, CompanyCreateDTO>().ReverseMap();
             CreateMap<Company, CompanyUpdateDTO>().ReverseMap();
 
@@ -35,6 +36,7 @@ namespace HelpingHands_Business.Mapper
             CreateMap<CompanyXAmenity, CompanyXAmenityUpdateDTO>().ReverseMap();
 
             CreateMap<CompanyXPayment, CompanyXPaymentDTO>().ReverseMap();
+            CreateMap<CompanyXPaymentCreateDTO, CompanyXPaymentDTO>().ReverseMap();
             CreateMap<CompanyXPayment, CompanyXPaymentCreateDTO>().ReverseMap();
             CreateMap<CompanyXPayment, CompanyXPaymentUpdateDTO>().ReverseMap();
 
@@ -53,6 +55,7 @@ namespace HelpingHands_Business.Mapper
             CreateMap<FirstCategory, FirstCategoryUpdateDTO>().ReverseMap();
 
             CreateMap<Payment, PaymentDTO>().ReverseMap();
+            CreateMap<PaymentCreateDTO, PaymentDTO>().ReverseMap();
             CreateMap<Payment, PaymentCreateDTO>().ReverseMap();
             CreateMap<Payment, PaymentUpdateDTO>().ReverseMap();
 

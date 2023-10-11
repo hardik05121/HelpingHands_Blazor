@@ -1,0 +1,72 @@
+﻿@page "/home/secondcategory/{id:int}"
+@inject ISecondCategoryService _secondCategoryService
+@inject NavigationManager _navigationManager
+
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+    <div class="body">
+        <HomeSlider></HomeSlider>
+        <div>
+            <section>
+                <div class="container">
+                    <div class="row">
+                        @if (SecondCategoryList != null)
+                        {
+                            @foreach (var image in SecondCategoryList)
+                            {
+                                <div class="col-md-2 col-sm-4 my-2 mt-3">
+                                    <div class="text-center">
+                                        @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
+                                        <a class="text-decoration-none" href="@($"home/thirdcategory//{image.FirstCategoryId}/{image.Id}")">
+                                            <img src="@image.SecondCategoryImage" alt="@image.SecondCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            <h6 class="text-dark">@image.SecondCategoryName</h6>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <HomeContent></HomeContent>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public bool IsProcessing { get; set; } = false;
+    private List<SecondCategoryDTO> SecondCategoryList { get; set; } = new List<SecondCategoryDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var response = await _secondCategoryService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            List<SecondCategoryDTO> SecondCategory = JsonConvert.DeserializeObject<List<SecondCategoryDTO>>(Convert.ToString(response.Result));
+            SecondCategoryList = SecondCategory.Where(x => x.FirstCategoryId == Id).ToList();
+        }
+
+        if (SecondCategoryList.Count > 0)
+        {
+            IsProcessing = false;
+        }
+        else
+        {
+            // string url = $"/home/detail/{Id}";
+            // _navigationManager.NavigateTo(url);
+            _navigationManager.NavigateTo($"/home/detail/{Id}");
+        }
+    }
+}

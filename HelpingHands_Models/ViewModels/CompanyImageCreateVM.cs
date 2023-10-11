@@ -11,7 +11,6 @@ namespace HelpingHands_Models.ViewModels
             CompanyImage = new CompanyImageCreateDTO();
             Company = new CompanyCreateDTO();
         }
-       
         public CompanyImageCreateDTO CompanyImage { get; set; }
 
         public CompanyCreateDTO Company { get; set; }

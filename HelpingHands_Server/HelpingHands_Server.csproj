@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HelpingHands_Business\HelpingHands_Business.csproj" />
     <ProjectReference Include="..\HelpingHands_Common\HelpingHands_Common.csproj" />
     <ProjectReference Include="..\HelpingHands_Models\HelpingHands_Models.csproj" />
   </ItemGroup>

@@ -1,5 +1,5 @@
-﻿using HelpingHands_Models;
-using HelpingHands_Models.ViewModels;
+﻿
+using HelpingHands_Models;
 
 namespace HelpingHands_Client.Service.IService
 {

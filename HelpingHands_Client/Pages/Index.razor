@@ -1,9 +1,57 @@
 ﻿@page "/"
+@inject IFirstCategoryService _firstCategoryService
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+    <div class="body">
+        <HomeSlider></HomeSlider>
+        <div>
+            <section>
+                <div class="container">
+                    <div class="row">
+                        @if (FirstCategory != null)
+                        {
+                            @foreach (var image in FirstCategory)
+                            {
+                                <div class="col-md-2 col-sm-4 my-2 mt-3">
+                                    <div class="text-center">
+                                        @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
+                                            <a class="text-decoration-none" href="@($"home/secondcategory/{image.Id}")">
+                                            <img src="@image.FirstCategoryImage" alt="@image.FirstCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            <h6 class="text-dark">@image.FirstCategoryName</h6>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
 
-Welcome to your new app.
+            <HomeContent></HomeContent>
+        </div>
+    </div>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    public bool IsProcessing { get; set; } = false;
+    private List<FirstCategoryDTO> FirstCategory { get; set; } = new List<FirstCategoryDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var response = await _firstCategoryService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            FirstCategory = JsonConvert.DeserializeObject<List<FirstCategoryDTO>>(Convert.ToString(response.Result));
+        }
+        IsProcessing = false;
+    }
+}

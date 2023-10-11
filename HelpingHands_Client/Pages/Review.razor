@@ -1,0 +1,110 @@
+﻿@* @page "/review/create/{companyid:int}"
+@using HelpingHands_Models.ViewModels;
+
+@inject ICompanyService _companyService
+@inject IReviewService _reviewService
+@inject NavigationManager _navigationManager
+
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+<EditForm Model="reviewVM" OnValidSubmit="CreateReview">
+    <div class="container border p-3">
+            <h4 class="text-primary">Add Review Of  @reviewVM.Company.CompanyName </h4>
+        <hr />
+
+        <div class="row">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input hidden asp-for="Company.Id" />
+            <input hidden asp-for="Review.LikeCount" value="0" />
+            <input hidden asp-for="Review.DisLikeCount" value="0" />
+
+            <div class="col-12 pb-3">
+                <div class="form-group float-md-end ">
+
+                    <span class="text-warning float-right"></span>
+                    <i class="ratingStar far fa-star " data-value="1"></i>
+                    <i class="ratingStar far fa-star " data-value="2"></i>
+                    <i class="ratingStar far fa-star " data-value="3"></i>
+                    <i class="ratingStar far fa-star " data-value="4"></i>
+                    <i class="ratingStar far fa-star " data-value="5"></i>
+
+
+                    <InputNumber hidden @bind-Value="reviewVM.Review.Rating" class="form-control" id="ratingsValue" />
+                </div>
+            </div>
+
+
+
+            <div class="col-2 ">
+                <label class="control-label pt-2" style="font-size:20px;">Title</label>
+            </div>
+            <div class="col-10 pb-3">
+                <InputText asp-for="Review.Title" class="form-control"></InputText>
+                <span asp-validation-for="Review.Title" class="text-danger "></span>
+
+            </div>
+            <div class="col-2 ">
+                <label class="control-label pt-2" style="font-size:20px;">Description</label>
+            </div>
+            <div class="col-10 pb-3">
+                <InputTextArea @bind-Value="reviewVM.Review.Description" class="form-control" rows="5"></InputTextArea>
+                    <span asp-validation-for="Review.Description" class="text-danger "></span>
+
+            </div>
+
+            <div class="row offset-2">
+                    <div class="form-group py-2">
+                        <button class="btn btn-primary">Update</button>
+                        <NavLink href="@($"home/briefdetail/{Company.Id}")" class="btn btn-secondary">Back to Index</NavLink>
+                    </div>
+            </div>
+        </div>
+
+    </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int CompanyId { get; set; } = 0;
+
+    public bool IsProcessing { get; set; } = false;
+
+    private ReviewCreateVM reviewVM { get; set; } = new ReviewCreateVM();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var response = await _companyService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+          var Company = JsonConvert.DeserializeObject<List<CompanyDTO>>(Convert.ToString(response.Result));
+            reviewVM.Company = JsonConvert.DeserializeObject<CompanyCreateDTO>(Convert.ToString(response.Result));
+        }
+        IsProcessing = false;
+    }
+
+    private async Task CreateReview()
+    {
+        // var response = await _countryService.CreateAsync<APIResponse>(Country);
+        // if (response != null && response.IsSuccess)
+        // {
+        //     await _jsRuntime.ToastrSuccess("Data create sucessfully.");
+        //     _navigationManager.NavigateTo("country");
+        // }
+        // else
+        // {
+        //     if (response.ErrorMessages.Count > 0)
+        //     {
+        //         await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+        //     }
+        // }
+    }
+} *@

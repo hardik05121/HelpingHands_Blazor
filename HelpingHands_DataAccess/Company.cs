@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace HelpingHands_DataAccess
 {
@@ -20,7 +20,7 @@ namespace HelpingHands_DataAccess
         public FirstCategory FirstCategory { get; set; }
 
         [ForeignKey("SecondCategory")]
-        public int SecondCategoryId { get; set; }
+        public int? SecondCategoryId { get; set; }
         [ValidateNever]
         public SecondCategory SecondCategory { get; set; }
 

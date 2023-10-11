@@ -1,0 +1,150 @@
+﻿@page "/companyxpayment/create/{id:int}"
+@using HelpingHands_Models.ViewModels;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@inject ICompanyService _companyService
+@inject NavigationManager _navigationManager
+@inject IPaymentService _paymentService
+@inject ICompanyXPaymentService _companyXPaymentService
+@inject IJSRuntime _jsRuntime
+@inject IMapper _mapper
+@*  @attribute [Authorize]  *@
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3">Service For @companyXPaymentVM.Company.CompanyName</h3>
+
+    <div class="col-12">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="companyXPaymentVM" OnValidSubmit="UpsertCompanyXPaymentVM">
+                <DataAnnotationsValidator />
+                <div class="row">
+
+                    <div class="container-fluid">
+                        @for (int index = 0; index < @companyXPaymentVM.Paymentlist.Count(); index++)
+                        {
+                            <div class="col-2 m-2">
+                                <InputCheckbox @bind-Value="companyXPaymentVM.Paymentlist[index].IsActive" class="form-check-input" />
+                                <label class="form-check-label" asp-for="@companyXPaymentVM.Paymentlist[index].IsActive">@companyXPaymentVM.Paymentlist[index].PaymentName</label>
+                                <input type="hidden" asp-for="@companyXPaymentVM.Paymentlist[index].Id" />
+                                <input type="hidden" asp-for="@companyXPaymentVM.Paymentlist[index].PaymentName" />
+                                <br />
+                            </div>
+                        }
+                    </div>
+                </div>
+           @*      <div class="row pt-3">
+                    <div class="form-group col-6">
+                        <label>First Category</label>
+                        <InputCheckbox @bind-Value="SecondCategory.FirstCategoryId" class="form-select">
+                            <option value="0" disabled="disabled" selected>--Select FirstCategory--</option>
+                            @foreach (var cat in FirstCategory)
+                            {
+                                <option value="@cat.Id">@cat.FirstCategoryName</option>
+                            }
+
+                        </InputCheckbox>
+                        <ValidationMessage For="()=>SecondCategory.FirstCategoryId"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="SecondCategory.IsActive" class="form-check-input" checked></InputCheckbox>
+                            <label class="form-check-label">Is Active</label>
+                        </div>
+                    </div>
+                </div> *@
+
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Upsert</button>
+                    <NavLink href="company" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private CompanyXPaymentVM companyXPaymentVM { get; set; } = new CompanyXPaymentVM();
+    // private CompanyDTO companyDTO { get; set; } = new CompanyDTO();
+    // private List<CompanyXPaymentDTO> companyXPaymentList = new List<CompanyXPaymentDTO>();
+    // private List<PaymentDTO> PaymentList { get; set; } = new List<PaymentDTO>();
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        CompanyXPaymentVM companyXPaymentVM = new();
+        {
+            var response = await _companyService.GetAsync<APIResponse>(Id);
+            if (response != null &&
+                response.IsSuccess)
+            {
+              var  companyDTO = JsonConvert.DeserializeObject<CompanyDTO>(Convert.ToString(response.Result));
+                companyXPaymentVM.Company = _mapper.Map<CompanyCreateDTO>(companyDTO);
+            }
+
+            var CompanyXPaymentlist = await _companyXPaymentService.GetAllAsync<APIResponse>();
+            if (CompanyXPaymentlist != null && CompanyXPaymentlist.IsSuccess)
+            {
+              var  companyXPaymentList = JsonConvert.DeserializeObject<List<CompanyXPaymentDTO>>(Convert.ToString(CompanyXPaymentlist.Result));
+                companyXPaymentVM.CompanyXPaymentlist = _mapper.Map<List<CompanyXPaymentCreateDTO>>(companyXPaymentList);
+            }
+
+            var PaymentList = await _paymentService.GetAllAsync<APIResponse>();
+            if (PaymentList != null && PaymentList.IsSuccess)
+            {
+                companyXPaymentVM.Paymentlist = JsonConvert.DeserializeObject<List<PaymentDTO>>
+                  (Convert.ToString(PaymentList.Result)).Select(i => new PaymentDTO
+                  {
+                          PaymentName = i.PaymentName,
+                          Id = i.Id,
+                          IsActive = companyXPaymentVM.CompanyXPaymentlist.Where(x => x.PaymentId == i.Id && x.CompanyId == Id).Any()
+                  }).ToList();
+            }
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpsertCompanyXPaymentVM()
+    {
+    //     if (OldImageUrl != SecondCategory.SecondCategoryImage)
+    //     {
+    //         _secondCategoryUpload.DeleteFile(OldImageUrl);
+
+    //     }
+    //     var response = await _secondCategoryService.UpdateAsync<APIResponse>(SecondCategory);
+    //     if (response != null && response.IsSuccess)
+    //     {
+    //         await _jsRuntime.ToastrSuccess("Data update sucessfully.");
+    //         _navigationManager.NavigateTo("secondcategory");
+    //     }
+    //     else
+    //     {
+    //         if (response.ErrorMessages.Count > 0)
+    //         {
+    //             await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+    //         }
+    //     }
+    }
+}

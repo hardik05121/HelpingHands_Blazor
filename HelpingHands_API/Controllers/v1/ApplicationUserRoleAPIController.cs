@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using Azure;
-using HelpingHands_Business.Repository.IRepostiory;
-using HelpingHands_DataAccess;
-using HelpingHands_Models;
-using HelpingHands_Models.Index;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +10,10 @@ using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using HelpingHands_Business.Repository.IRepostiory;
+using HelpingHands_DataAccess;
+using HelpingHands_Models;
+using HelpingHands_Models.Index;
 
 namespace HelpingHands_API.Controllers.v1
 {

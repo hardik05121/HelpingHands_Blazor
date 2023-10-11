@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace HelpingHands_DataAccess
 {
@@ -15,7 +15,7 @@ namespace HelpingHands_DataAccess
         public string FirstCategoryName { get; set; }
 
         [DisplayName("First CategoryImage")]
-        public string FirstCategoryImage { get; set; }
+        public string? FirstCategoryImage { get; set; }
 
         public bool IsActive { get; set; }
 
