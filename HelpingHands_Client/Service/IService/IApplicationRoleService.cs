@@ -1,14 +1,14 @@
-﻿using HelpingHands_Models;
-
+﻿
+using HelpingHands_Models;
 namespace HelpingHands_Client.Service.IService
 {
 	public interface IApplicationRoleService
     {
-            Task<T> GetAllAsync<T>(string token);
-            Task<T> GetAsync<T>(string Id, string token);
-            Task<T> CreateAsync<T>(ApplicationRoleDTO dto, string token);
-            Task<T> UpdateAsync<T>(ApplicationRoleDTO dto, string token);
-            Task<T> DeleteAsync<T>(string id, string token);
-        Task<T> ApplicationRoleByPagination<T>(string term, string orderBy, int currentPage, string token);
+            Task<T> GetAllAsync<T>();
+            Task<T> GetAsync<T>(string Id);
+            Task<T> CreateAsync<T>(ApplicationRoleDTO dto);
+            Task<T> UpdateAsync<T>(ApplicationRoleDTO dto);
+            Task<T> DeleteAsync<T>(string id);
+        Task<T> ApplicationRoleByPagination<T>(string term, string orderBy, int currentPage);
     }
 }

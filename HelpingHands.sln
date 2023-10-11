@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpingHands_Common", "Help
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpingHands_DataAccess", "HelpingHands_DataAccess\HelpingHands_DataAccess.csproj", "{516CC13A-3F7A-4F6A-B039-F25818ED78E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpingHands_Server", "HelpingHands_Server\HelpingHands_Server.csproj", "{A7972D6B-0882-4370-8CBF-1770ABB10C34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpingHands_Server", "HelpingHands_Server\HelpingHands_Server.csproj", "{A7972D6B-0882-4370-8CBF-1770ABB10C34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

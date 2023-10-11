@@ -64,10 +64,10 @@
                     <tr>
                         <td>@item.CompanyName</td>
                         <td> <NavLink href="@($"thirdcategory/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>View Detail</NavLink></td>
-                        <td> <NavLink href="@($"thirdcategory/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Amenity</NavLink></td>
-                        <td> <NavLink href="@($"thirdcategory/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Payment</NavLink></td>
-                        <td> <NavLink href="@($"thirdcategory/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Service</NavLink></td>
-                        <td> <NavLink href="@($"thirdcategory/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Image</NavLink></td>
+                        <td> <NavLink href="@($"companyxamenity/create/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Amenity</NavLink></td>
+                        <td> <NavLink href="@($"companyxpayment/create/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Payment</NavLink></td>
+                        <td> <NavLink href="@($"companyxservice/create/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Service</NavLink></td>
+                        <td> <NavLink href="@($"companyximage/create/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit Image</NavLink></td>
                         <td>
                             <NavLink href="@($"company/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
                             <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
@@ -76,8 +76,6 @@
                 }
             </tbody>
         </table>
-
-
 
         <nav aria-label="Page navigation example">
             <ul class="pagination">

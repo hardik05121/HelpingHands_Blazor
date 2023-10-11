@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace HelpingHands_DataAccess
 {
@@ -16,7 +16,7 @@ namespace HelpingHands_DataAccess
         public string ThirdCategoryName { get; set; }
 
         [DisplayName("Third Category Image")]
-        public string ThirdCategoryImage { get; set; }
+        public string? ThirdCategoryImage { get; set; }
 
         [ForeignKey("FirstCategory")]
         public int FirstCategoryId { get; set; }

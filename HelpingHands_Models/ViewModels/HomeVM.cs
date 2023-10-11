@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HelpingHands_Models.ViewModels
@@ -51,10 +50,3 @@ namespace HelpingHands_Models.ViewModels
         public List<ReviewXCommentDTO> ReviewXCommentList { get; set; }
     }
 }
-
-
-
-
-
-
-

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using HelpingHands_Business.Repository.IRepostiory;using HelpingHands_DataAccess;using HelpingHands_DataAccess.Data;
-using HelpingHands_Models;using HelpingHands_Models.Index;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -9,6 +8,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using System.Text.Json;
+
+using HelpingHands_Business.Repository.IRepostiory;
+using HelpingHands_DataAccess;
+using HelpingHands_Models;
+using HelpingHands_Models.Index;
+using HelpingHands_DataAccess.Data;
 
 namespace HelpingHands_API.Controllers.v1
 {

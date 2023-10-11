@@ -1,0 +1,74 @@
+﻿@page "/home/thirdcategory/{firstcategoryid:int}/{id:int}"
+@inject IThirdCategoryService _thirdCategoryService
+@inject NavigationManager _navigationManager
+
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+    <div class="body">
+        <HomeSlider></HomeSlider>
+        <div>
+            <section>
+                <div class="container">
+                    <div class="row">
+                        @if (ThirdCategoryList != null)
+                        {
+                            @foreach (var image in ThirdCategoryList)
+                            {
+                                <div class="col-md-2 col-sm-4 my-2 mt-3">
+                                    <div class="text-center">
+                                        @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
+                                            <a class="text-decoration-none" href="@($"home/detail/{image.FirstCategoryId}/{image.SecondCategoryId}/{image.Id}")">
+                                            <img src="@image.ThirdCategoryImage" alt="@image.ThirdCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            <h6 class="text-dark">@image.ThirdCategoryName</h6>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
+            <HomeContent></HomeContent>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int FirstCategoryId { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public bool IsProcessing { get; set; } = false;
+    private List<ThirdCategoryDTO> ThirdCategoryList { get; set; } = new List<ThirdCategoryDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var response = await _thirdCategoryService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            ThirdCategoryList = JsonConvert.DeserializeObject<List<ThirdCategoryDTO>>(Convert.ToString(response.Result));
+            ThirdCategoryList = ThirdCategoryList.Where(x => x.FirstCategoryId == FirstCategoryId && x.SecondCategoryId == Id).ToList();
+        }
+        if (ThirdCategoryList.Count > 0)
+        {
+            IsProcessing = false;
+        }
+        else
+        {
+            // string url = $"/home/detail/{Id}";
+            // _navigationManager.NavigateTo(url);
+
+            _navigationManager.NavigateTo($"/home/detail/{FirstCategoryId}/{Id}");
+        }
+    }
+}

@@ -1,9 +1,4 @@
 ﻿using AutoMapper;
-using HelpingHands_Business.Repository.IRepostiory;
-using HelpingHands_DataAccess;
-using HelpingHands_Models;
-using HelpingHands_Models.Index;
-using HelpingHands_Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -14,6 +9,13 @@ using System.Drawing;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
+
+using HelpingHands_Business.Repository.IRepostiory;
+using HelpingHands_DataAccess;
+using HelpingHands_Models;
+using HelpingHands_Models.Index;
+using HelpingHands_Models.ViewModels;
+using Azure;
 
 namespace HelpingHands_API.Controllers.v1
 {
@@ -35,7 +37,7 @@ namespace HelpingHands_API.Controllers.v1
         }
 
 
-        [HttpGet]
+        [HttpGet(Name = "GetCompanyXAmenitys")]
         [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -80,6 +82,53 @@ namespace HelpingHands_API.Controllers.v1
             return _response;
 
         }
+
+        //    [HttpGet(Name = "GetCompanyXAmenitys")]
+        //    [ResponseCache(CacheProfileName = "Default30")]
+        //    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        //    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        //    [ProducesResponseType(StatusCodes.Status200OK)]
+        //    public async Task<ActionResult<APIResponse>> GetCompanyXAmenitys([FromQuery(Name = "filterDisplayOrder")] int? Id,
+        //[FromQuery] string? search, int pageSize = 0, int pageNumber = 1)
+        //    {
+        //        try
+        //        {
+
+        //            IEnumerable<CompanyXAmenity> carXColorList;
+
+        //            if (Id > 0)
+        //            {
+        //                carXColorList = await _unitOfWork.CompanyXAmenity.GetAllAsync(u => u.Id == Id, includeProperties: "Company,Amenity", pageSize: pageSize,
+        //                    pageNumber: pageNumber);
+        //            }
+        //            else
+        //            {
+        //                carXColorList = await _unitOfWork.CompanyXAmenity.GetAllAsync(includeProperties: "Company,Amenity", pageSize: pageSize,
+        //                    pageNumber: pageNumber);
+        //            }
+        //            if (!string.IsNullOrEmpty(search))
+        //            {
+        //                carXColorList = carXColorList.Where(u => u.Company.CompanyName.ToLower().Contains(search));
+        //            }
+        //            Pagination pagination = new() { PageNumber = pageNumber, PageSize = pageSize };
+
+        //            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+        //            _response.Result = _mapper.Map<List<CompanyXAmenityDTO>>(carXColorList);
+        //            _response.StatusCode = HttpStatusCode.OK;
+        //            return Ok(_response);
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            _response.IsSuccess = false;
+        //            _response.ErrorMessages
+        //                 = new List<string>() { ex.ToString() };
+        //        }
+        //        return _response;
+
+        //    }
+
+
 
 
 

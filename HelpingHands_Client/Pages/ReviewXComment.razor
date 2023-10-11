@@ -1,0 +1,54 @@
+﻿@* @page "/home/detail/{firstcategoryid:int}/{secondcategoryid:int}"
+
+@inject ICompanyService _companyService
+@inject NavigationManager _navigationManager
+
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+    
+}
+
+
+@code {
+    [Parameter]
+    public int FirstCategoryId { get; set; } = 0;
+    [Parameter]
+    public int SecondCategoryId { get; set; } = 0;
+    [Parameter]
+    public int ThirdCategoryId { get; set; } = 0;
+
+    public bool IsProcessing { get; set; } = false;
+
+    private IEnumerable<CompanyDTO> Company { get; set; } = new List<CompanyDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var response = await _companyService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            Company = JsonConvert.DeserializeObject<List<CompanyDTO>>(Convert.ToString(response.Result));
+
+            if (FirstCategoryId > 0 && SecondCategoryId <= 0 && ThirdCategoryId <= 0)
+            {
+                Company = Company.Where(x => x.FirstCategoryId == ThirdCategoryId).ToList();
+            }
+            else if (FirstCategoryId > 0 && SecondCategoryId > 0 && ThirdCategoryId <= 0)
+            {
+                Company = Company.Where(x => x.FirstCategoryId == FirstCategoryId && x.SecondCategoryId == SecondCategoryId).ToList();
+            }
+            else
+            {
+                Company = Company.Where(x => x.FirstCategoryId == FirstCategoryId && x.SecondCategoryId == SecondCategoryId && x.ThirdCategoryId == ThirdCategoryId).ToList();
+            }
+        }
+        IsProcessing = false;
+    }
+}  *@

@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using Azure;
-using HelpingHands_Business.Repository.IRepostiory;
-using HelpingHands_DataAccess;
-using HelpingHands_Models;
-using HelpingHands_Models.Index;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,6 +9,11 @@ using System.Data;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
+
+using HelpingHands_Business.Repository.IRepostiory;
+using HelpingHands_DataAccess;
+using HelpingHands_Models;
+using HelpingHands_Models.Index;
 
 namespace HelpingHands_API.Controllers.v1
 {
@@ -83,7 +84,7 @@ namespace HelpingHands_API.Controllers.v1
             return _response;
         }
 
-        [HttpGet(Name = "IndexByPagination")]
+        [HttpGet(Name = "CompanyByPagination")]
         [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -341,7 +342,7 @@ namespace HelpingHands_API.Controllers.v1
                     ModelState.AddModelError("ErrorMessages", "Company already Exists!");
                     return BadRequest(ModelState);
                 }
-                if (await _unitOfWork.FirstCategory.GetAsync(u => u.Id == updateDTO.FirstCategoryId) == null)
+                if (await _unitOfWork.FirstCategory.GetAsync(u => u.Id == updateDTO.FirstCategoryId && u.Id != updateDTO.Id) != null)
                 {
                     ModelState.AddModelError("ErrorMessages", "FirstCategory ID is Invalid!");
                     return BadRequest(ModelState);
@@ -357,7 +358,6 @@ namespace HelpingHands_API.Controllers.v1
                 //    return BadRequest(ModelState);
                 //}
                 Company model = _mapper.Map<Company>(updateDTO);
-                model.UpdatedDate = DateTime.Now;
                 await _unitOfWork.Company.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;

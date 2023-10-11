@@ -1,0 +1,638 @@
+﻿@page "/home/briefdetail/{id:int}"
+@using HelpingHands_Models.ViewModels;
+@inject ICompanyService _companyService
+@inject ICompanyImageService _companyImageService
+@inject ICompanyXAmenityService _companyXAmenityService
+@inject ICompanyXPaymentService _companyXPaymentService
+@inject ICompanyXServiceService _companyXServiceService
+@inject IReviewService _reviewService
+@inject IReviewXCommentService _reviewXCommentService
+@inject IEnquiryService _enquiryService
+@inject NavigationManager _navigationManager
+
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/loading.gif" />
+    </div>
+}
+else
+{
+    <div class="card shadow  border-0 p-4 m-5 bg-body rounded">
+        <div class="card-header bg-secondary bg-gradient text-light py-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h3 class="text-white text-uppercase">@homeVM.Company.CompanyName</h3>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="py-3">
+                <div class="row d-flex ">
+                    @* <div class="col-5 col-md-2 offset-lg-1 pb-1">
+                <a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
+                <small>Back to Home</small>
+                </a>
+                </div>*@
+
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-9">
+                        <div class="row">
+
+                            <div class="col-12 col-lg-4  text-center mb-3">
+                                @if (homeVM.CompanyImageList != null && homeVM.CompanyImageList.Count > 0)
+                                {
+                                    <div id="carouselExampleIndicators" class="carousel  slide" data-bs-ride="carousel">
+                                        <div class="carousel-indicators">
+
+                                            @foreach (var imageWithIndex in
+                                           homeVM.CompanyImageList
+                                           .Select((image, index) => new { Image = image, Index = index }))
+                                            {
+                                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@imageWithIndex.Index" class="@(imageWithIndex.Index==0?"active":"")" aria-current="true" aria-label="Slide 1"></button>
+                                            }
+
+
+                                        </div>
+                                        <div class="carousel-inner">
+                                            @foreach (var imageWithIndex in
+                                           homeVM.CompanyImageList
+                                           .Select((image, index) => new { Image = image, Index = index }))
+                                            {
+                                                <div class="@(imageWithIndex.Index==0?"carousel-item active":"carousel-item")">
+                                                    <a asp-action="AllImages" asp-route-companyId="@homeVM.Company.Id">  <img src="@imageWithIndex.Image.Image" style="height:250px; width:100%;" class="d-block w-100" alt="..."> </a>
+                                                </div>
+                                            }
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+                                   
+                                }
+                            </div>
+                            <div class="col-12 col-lg-5 ms-5  align-items-center ">
+                                <h4 class="fw-bold mb-2 mx-2"> Basic Information</h4>
+                                <div class="pb-2">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        First Category Name :-
+                                    </span>
+                                    <span class="">
+                                        @homeVM.Company.FirstCategory.FirstCategoryName
+                                    </span>
+                                </div>
+
+                                @if (@homeVM.Company.SecondCategoryId > 0)
+                                {
+                                    <div class="pb-2">
+                                        <span class="text-dark text-opacity-50 fw-bold">
+                                            Second Category Name :-
+                                        </span>
+                                        <span class="">
+                                            @homeVM.Company.SecondCategory.SecondCategoryName
+                                        </span>
+                                    </div>
+                                }
+
+
+                                @if (homeVM.Company.ThirdCategoryId > 0)
+                                {
+                                    <div class="pb-2">
+                                        <span class="text-dark text-opacity-50 fw-bold">
+                                            Third Category Name :-
+                                        </span>
+                                        <span class="">
+                                            @homeVM.Company.ThirdCategory.ThirdCategoryName
+                                        </span>
+                                    </div>
+                                }
+
+                                <div class="pb-2">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        Address :-
+                                    </span>
+                                    <span class="">
+                                        @homeVM.Company.Address
+                                    </span>
+                                </div>
+
+                                <div class="pb-2">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        City Name :-
+                                    </span>
+                                    <span class="">
+                                        @homeVM.Company.City.CityName
+                                    </span>
+                                </div>
+
+                                <div class="pb-2">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        State :-
+                                    </span>
+                                    <span class="">
+                                        @homeVM.Company.State.StateName
+                                    </span>
+                                </div>
+
+                                <div class="pb-2">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        Country :-
+                                    </span>
+                                    <span class="">
+                                        @homeVM.Company.Country.CountryName
+                                    </span>
+                                </div>
+
+                                <div class="pb-2 ">
+                                    <span class="text-dark text-opacity-50 fw-bold">
+                                        Description :-
+                                    </span>
+                                    <span class="" id="ReadMore">
+                                        @homeVM.Company.Description.Substring(0,10);
+                                    </span>
+                                    <span class="" id="ReadLess">
+                                        @homeVM.Company.Description
+                                    </span><span id="dots">...</span> <a class="" onclick="myFunction()" id="myBtn">Read more</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class=" text-body">
+                                <h4 class="fw-bold m-2 p-2"> Contact Information</h4>
+                                <div class="d-flex">
+                                    <div class="col-lg-2">
+                                        <span class="fw-bold">
+                                            Certification
+                                        </span>
+                                        <div class="mt-2">
+                                            @homeVM.Company.Certificate
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-3 col-lg-2">
+                                        <span class="fw-bold">
+                                            Establish Year
+                                        </span>
+                                        <div class="mt-2">
+                                            @homeVM.Company.EstablishDate.Year
+                                        </div>
+                                    </div>
+
+
+                                    <div class="ms-3 col-lg-2">
+                                        <span class="fw-bold">
+                                            Phone Number
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" target="_blank">
+                                                <i class="bi bi-telephone"></i>@homeVM.Company.PhoneNumber
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-3">
+                                        <span class="fw-bold">
+                                            Mail
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" href="https://mail.google.com/" target="_blank">
+                                                <i class="bi bi-envelope"></i>@homeVM.Company.Email
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="d-flex">
+                                    <div class="col-lg-2">
+                                        <span class="fw-bold">
+                                            WhatsApp
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" type="button" href="https://web.whatsapp.com/" data-action="share/whatsapp/share" target="_blank">
+                                                <i class="bi bi-whatsapp"></i>whatsApp
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-3 col-lg-2">
+                                        <span class="fw-bold">
+                                            Instragram
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" type="button" href="https://web.whatsapp.com/" data-action="share/whatsapp/share" target="_blank">
+                                                <i class="bi bi-instagram"></i>Instragram
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                    <div class="ms-3 col-lg-2">
+                                        <span class="fw-bold">
+                                            Facebook
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" type="button" href="https://www.facebook.com/" data-action="share/whatsapp/share" target="_blank"><i class="bi bi-facebook"></i>Facebook</a>
+
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-3">
+                                        <span class="fw-bold">
+                                            Twitter
+                                        </span>
+                                        <div class="mt-2">
+                                            <a class="btn btn-primary" type="button" href="https://twitter.com/" data-action="share/whatsapp/share" target="_blank">
+                                                <i class="bi bi-twitter"></i>Twitter
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <h4 class="fw-bold  m-3 p-2"> Special Detail</h4>
+                            <div class="col-12 col-lg-3">
+                                <h5 class=" fw-bold">Amenity</h5>
+                                <div class="row">
+                                    @if (homeVM.AmenityList != null)
+                                    {
+                                        @foreach (var item in homeVM.AmenityList)
+                                        {
+                                            <div class="">@item.Amenity.AmenityName</div>
+
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-3">
+                                <h5 class=" fw-bold">Payment</h5>
+                                <div class="row">
+                                    @if (homeVM.PaymentList != null)
+                                    {
+                                        @foreach (var item in homeVM.PaymentList)
+                                        {
+                                            <div class="">@item.Payment.PaymentName</div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-3">
+                                <h5 class="fw-bold">Service</h5>
+                                <div class="row">
+                                    @if (homeVM.ServiceList != null)
+                                    {
+                                        @foreach (var item in homeVM.ServiceList)
+                                        {
+                                            <div class="">@item.Service.ServiceName</div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <a class="btn btn-primary col-lg-3 justify-content-end" 
+                            href="@($"review/create/{homeVM.Company.Id}")">
+                                Add Review
+                            </a>
+                        </div>
+                        <div class="row">
+
+                            @if (homeVM.ServiceList != null)
+                            {
+
+                                @foreach (var item in homeVM.ReviewList)
+                                {
+                                    <div class="my-1">
+                                        <div class="pl-1 text-start">
+                                            <span class="fw-bold col-lg-2">Title:-</span><span class="col-lg-7">@item.Title</span>
+
+                                        </div>
+                                        <div class="pl-1 text-start">
+                                            <span class="fw-bold">UserName:-</span>
+                                            @item.ApplicationUser.UserName
+                                        </div>
+
+                                        <div class="pl-1 text-start">
+                                            <span class="fw-bold">Description:-</span>
+                                            @item.Description
+                                        </div>
+
+                                        <div class="ratingContainer">
+                                            @for (int i = 0; i < @item.Rating; i++)
+                                            {
+                                                <i class="ratingStar fas fa-star"></i>
+                                            }
+                                            @for (int i = 0; i < 5 - @item.Rating; i++)
+                                            {
+                                                <i class="ratingStar far fa-star"></i>
+                                            }
+                                        </div>
+                                        <div class=" d-flex justify-content-evenly m-2 ">
+                                            <div class="border border-1 border-dark rounded-pill p-1">
+                                                <a asp-controller="Review" asp-action="LikeCount" asp-area="Admin" asp-route-reviewId="@item.Id">
+                                                    <i class="bi bi-hand-thumbs-up Like"></i>
+                                                    <span>@item.LikeCount</span>
+                                                    @*<p class="mb-0">Like</p>*@
+                                                </a>
+
+                                            </div>
+                                            <div class="border border-1 border-dark rounded-pill p-1">
+                                                <a asp-action="DisLikeCount" asp-controller="Review" asp-area="Admin" asp-route-reviewId="@item.Id">
+                                                    <i class="bi bi-hand-thumbs-down DisLike"></i>
+                                                    <span>@item.DisLikeCount</span>
+                                                    @*<p class="mb-0">DisLike</p>*@
+                                                </a>
+
+                                            </div>
+
+                                            <div class="">
+                                                <a class="btn btn-primary " asp-action="ReviewXComment" asp-controller="Review" asp-route-reviewId="@item.Id" asp-route-companyId="@item.CompanyID" asp-area="Customer">
+                                                    <i class="bi bi-chat"></i>Add your comment
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            @foreach (var item1 in homeVM.ReviewXCommentList)
+                                            {
+                                                @if (@item.Id == @item1.ReviewID)
+                                                {
+                                                    <div class="pl-1 text-start">
+                                                        <span class="fw-bold">UserName:-</span>
+                                                        @item.ApplicationUser.UserName
+                                                    </div>
+
+                                                    <div class="pl-1 text-start">
+                                                        <span class="fw-bold">Comment:-</span>
+                                                        @item1.Comment
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <hr />
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-3 ">
+                        <div class="wrapper">
+                            <h2>Enquiry</h2>
+                            <EditForm Model="homeVM" OnValidSubmit="CreateEnquiry">
+
+                                @* <InputText hidden @bind-Value="homeVM.Company.Id" />
+                                <InputText hidden @bind-Value="homeVM.Enquiry.Id" /> *@
+
+                                <div class="input-box pb-2">
+                                    <InputText @bind-Value="Enquiry.UserName" class="form-control" placeholder="Enter UserName" required />
+                                    <ValidationMessage For="()=>Enquiry.UserName"></ValidationMessage>
+                                </div>
+
+                                <div class="input-box pb-2">
+                                    <InputText @bind-Value="Enquiry.Email" class="form-control" placeholder="Enter Email" required />
+                                    <ValidationMessage For="()=>Enquiry.Email"></ValidationMessage>
+                                </div>
+
+                                <div class="input-box pb-2">
+
+                                    <InputNumber  @bind-Value="Enquiry.PhoneNumber" class="form-control" placeholder="Enter Your PhoneNumber" required />
+                                    <ValidationMessage For="()=>Enquiry.PhoneNumber"></ValidationMessage>
+                                </div>
+
+                                <div class="input-box pb-2">
+                                    <InputText @bind-Value="Enquiry.Title" class="form-control" placeholder="Enter Title" required />
+                                    <ValidationMessage For="()=>Enquiry.Title"></ValidationMessage>
+                                </div>
+
+                                <div class="input-box pb-2">
+                                    <InputText @bind-Value="Enquiry.Description" class="form-control" placeholder=" Enter Description" required />
+                                    <ValidationMessage For="()=>Enquiry.Title"></ValidationMessage>
+                                </div>
+
+                                <div class="input-box button">
+                                    <button class="btn btn-primary">Create</button>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<style>
+    #ReadLess {
+        display: none;
+    }
+</style>
+<style>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" / >
+
+    * {
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .wrapper {
+        position: relative;
+        max-width: 430px;
+        width: 100%;
+        background: #fff;
+        padding: 34px;
+        border-radius: 6px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        /*  margin-left: 35%; */
+        /* margin-top: 5%; */
+        align-items: center;
+        justify-content: center;
+    }
+
+        .wrapper h2 {
+            position: relative;
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+        /*
+                                    .wrapper h2::before {
+                                        content: '';
+                                        position: absolute;
+                                        left: 0;
+                                        bottom: 0;
+                                        height: 3px;
+                                        width: 20px;
+                                        border-radius: 12px;
+                                        background: #4070f4;
+                                    } */
+
+        .wrapper form {
+            margin-top: 30px;
+        }
+
+            .wrapper form .input-box {
+                height: 50px;
+                margin: 18px 0;
+            }
+
+    form .input-box input {
+        height: 100%;
+        width: 100%;
+        outline: none;
+        padding: 0 15px;
+        font-size: 17px;
+        font-weight: 400;
+        color: #333;
+        border: 1.5px solid #C7BEBE;
+        border-bottom-width: 2.5px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    /*   .input-box input:focus,
+                            .input-box input:valid {
+                                border-color: #4070f4;
+                            } */
+
+    form .policy {
+        display: flex;
+        align-items: center;
+    }
+
+    form h3 {
+        color: #707070;
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+
+    .input-box.button input {
+        color: #fff;
+        letter-spacing: 1px;
+        border: none;
+/*         background: #4070f4; */
+        cursor: pointer;
+    }
+
+        .input-box.button input:hover {
+            background: #0e4bf1;
+        }
+
+    form .text h3 {
+        color: #333;
+        width: 100%;
+        text-align: center;
+    }
+
+        form .text h3 a {
+            color: #4070f4;
+            text-decoration: none;
+        }
+
+            form .text h3 a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+@code {
+    [Parameter]
+    public int Id { get; set; } = 0;
+
+    public bool IsProcessing { get; set; } = false;
+
+    private HomeVM homeVM { get; set; } = new HomeVM();
+    private EnquiryDTO Enquiry { get; set; } = new EnquiryDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+
+        var response = await _companyService.GetAsync<APIResponse>(Id);
+        if (response != null && response.IsSuccess)
+        {
+            homeVM.Company = JsonConvert.DeserializeObject<CompanyDTO>(Convert.ToString(response.Result));
+        }
+        var response1 = await _companyImageService.GetAllAsync<APIResponse>();
+        if (response1 != null && response1.IsSuccess)
+        {
+            List<CompanyImageDTO> companyImages = JsonConvert.DeserializeObject<List<CompanyImageDTO>>(Convert.ToString(response1.Result));
+            homeVM.CompanyImageList = companyImages.Where(x => x.CompanyId == Id).ToList();
+        }
+        var response2 = await _companyXAmenityService.GetAllAsync<APIResponse>();
+        if (response2 != null && response2.IsSuccess)
+        {
+            List<CompanyXAmenityDTO> companyXAmenities = JsonConvert.DeserializeObject<List<CompanyXAmenityDTO>>(Convert.ToString(response2.Result));
+            homeVM.AmenityList = companyXAmenities.Where(x => x.CompanyId == Id).ToList();
+        }
+        var response3 = await _companyXPaymentService.GetAllAsync<APIResponse>();
+        if (response3 != null && response3.IsSuccess)
+        {
+            List<CompanyXPaymentDTO> companyXPayments = JsonConvert.DeserializeObject<List<CompanyXPaymentDTO>>(Convert.ToString(response3.Result));
+            homeVM.PaymentList = companyXPayments.Where(x => x.CompanyId == Id).ToList();
+        }
+        var response4 = await _companyXServiceService.GetAllAsync<APIResponse>();
+        if (response4 != null && response4.IsSuccess)
+        {
+            List<CompanyXServiceDTO> companyXServices = JsonConvert.DeserializeObject<List<CompanyXServiceDTO>>(Convert.ToString(response4.Result));
+            homeVM.ServiceList = companyXServices.Where(x => x.CompanyId == Id).ToList();
+        }
+        var response5 = await _reviewService.GetAllAsync<APIResponse>();
+        if (response5 != null && response5.IsSuccess)
+        {
+            List<ReviewDTO> reviewServices = JsonConvert.DeserializeObject<List<ReviewDTO>>(Convert.ToString(response5.Result));
+            homeVM.ReviewList = reviewServices.Where(x => x.CompanyID == Id).ToList();
+        }
+        var ReviewXcommentList = await _reviewXCommentService.GetAllAsync<APIResponse>();
+        if (ReviewXcommentList != null && ReviewXcommentList.IsSuccess)
+        {
+            var reviewList = JsonConvert.DeserializeObject<List<ReviewXCommentDTO>>(Convert.ToString(ReviewXcommentList.Result));
+            homeVM.ReviewXCommentList = reviewList.OrderByDescending(p => p.Id).ToList();
+        }
+        IsProcessing = false;
+    }
+
+
+
+    private async Task CreateEnquiry()
+    {
+        // var response = await _countryService.CreateAsync<APIResponse>(Country);
+        // if (response != null && response.IsSuccess)
+        // {
+        //     await _jsRuntime.ToastrSuccess("Data create sucessfully.");
+        //     _navigationManager.NavigateTo("country");
+        // }
+        // else
+        // {
+        //     if (response.ErrorMessages.Count > 0)
+        //     {
+        //         await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+        //     }
+        // }
+
+    }
+}

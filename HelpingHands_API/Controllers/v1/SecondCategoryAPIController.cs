@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using HelpingHands_Business.Repository.IRepostiory;
-using HelpingHands_DataAccess;
-using HelpingHands_Models;
-using HelpingHands_Models.Index;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,6 +8,11 @@ using System.Data;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
+
+using HelpingHands_Business.Repository.IRepostiory;
+using HelpingHands_DataAccess;
+using HelpingHands_Models;
+using HelpingHands_Models.Index;
 
 namespace HelpingHands_API.Controllers.v1
 {
@@ -151,28 +152,13 @@ namespace HelpingHands_API.Controllers.v1
             try
             {
 
-                IEnumerable<SecondCategory> categoryList;
+                IEnumerable<SecondCategory> categoryList = new List<SecondCategory>();
 
                 if (Id > 0)
                 {
-
-                    categoryList = await _unitOfWork.SecondCategory.GetAllAsync(u => u.FirstCategoryId == Id, includeProperties: "FirstCategory", pageSize: pageSize,
-                        pageNumber: pageNumber);
+                   categoryList = await _unitOfWork.SecondCategory.GetAllAsync(u => u.FirstCategoryId == Id, includeProperties: "FirstCategory");
                 }
-                else
-                {
-                    categoryList = await _unitOfWork.SecondCategory.GetAllAsync(includeProperties: "FirstCategory", pageSize: pageSize,
-                        pageNumber: pageNumber);
-                }
-                if (!string.IsNullOrEmpty(search))
-                {
-                    categoryList = categoryList.Where(u => u.SecondCategoryName.ToLower().Contains(search) ||
-                                                 u.FirstCategory.FirstCategoryName.ToLower().Contains(search));
 
-                }
-                Pagination pagination = new() { PageNumber = pageNumber, PageSize = pageSize };
-
-                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
                 _response.Result = _mapper.Map<List<SecondCategoryDTO>>(categoryList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);

@@ -1,18 +1,16 @@
-﻿using HelpingHands_Models;
-using HelpingHands_Models.ViewModels;
+﻿
+using HelpingHands_Models;
 
 namespace HelpingHands_Client.Service.IService
 {
     public interface ICompanyService
-
     {
-
-        Task<T> GetAllAsync<T>(string token);
-        Task<T> GetAsync<T>(int id, string token);
-        Task<T> CreateAsync<T>(CompanyDTO dto, string token);
-        Task<T> UpdateAsync<T>(CompanyDTO dto, string token);
-        Task<T> DeleteAsync<T>(int id, string token);
-        Task<T> CompanySearchByLazyLoading<T>(int pageNum, string searchText,string token);
-        Task<T> CompanyByPagination<T>(string term, string orderBy, int currentPage, string token);
+        Task<T> GetAllAsync<T>();
+        Task<T> GetAsync<T>(int id);
+        Task<T> CreateAsync<T>(CompanyDTO dto);
+        Task<T> UpdateAsync<T>(CompanyDTO dto);
+        Task<T> DeleteAsync<T>(int id);
+        Task<T> CompanySearchByLazyLoading<T>(int pageNum, string searchText);
+        Task<T> CompanyByPagination<T>(string term, string orderBy, int currentPage);
     }
 }
