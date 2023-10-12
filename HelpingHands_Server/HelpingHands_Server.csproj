@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\firstcategory\" />
+    <Folder Include="wwwroot\images\thirdcategory\" />
+    <Folder Include="wwwroot\images\secondcategory\" />
   </ItemGroup>
 
 </Project>

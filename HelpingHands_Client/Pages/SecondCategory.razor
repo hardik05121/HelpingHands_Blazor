@@ -1,7 +1,7 @@
 ﻿@page "/home/secondcategory/{id:int}"
 @inject ISecondCategoryService _secondCategoryService
 @inject NavigationManager _navigationManager
-
+@inject IConfiguration _configuration
 
 @if (IsProcessing)
 {
@@ -25,7 +25,7 @@ else
                                     <div class="text-center">
                                         @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
                                         <a class="text-decoration-none" href="@($"home/thirdcategory//{image.FirstCategoryId}/{image.Id}")">
-                                            <img src="@image.SecondCategoryImage" alt="@image.SecondCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            <img src="@(BaseServerUrl+image.SecondCategoryImage)" alt="@image.SecondCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
                                             <h6 class="text-dark">@image.SecondCategoryName</h6>
                                         </a>
                                     </div>
@@ -47,10 +47,12 @@ else
 
     public bool IsProcessing { get; set; } = false;
     private List<SecondCategoryDTO> SecondCategoryList { get; set; } = new List<SecondCategoryDTO>();
+    private string BaseServerUrl;
 
     protected override async Task OnInitializedAsync()
     {
         IsProcessing = true;
+        BaseServerUrl = _configuration["BaseServerUrl"];
         var response = await _secondCategoryService.GetAllAsync<APIResponse>();
         if (response != null && response.IsSuccess)
         {

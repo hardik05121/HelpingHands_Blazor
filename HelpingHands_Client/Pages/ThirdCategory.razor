@@ -1,6 +1,7 @@
 ﻿@page "/home/thirdcategory/{firstcategoryid:int}/{id:int}"
 @inject IThirdCategoryService _thirdCategoryService
 @inject NavigationManager _navigationManager
+@inject IConfiguration _configuration
 
 
 @if (IsProcessing)
@@ -25,7 +26,7 @@ else
                                     <div class="text-center">
                                         @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
                                             <a class="text-decoration-none" href="@($"home/detail/{image.FirstCategoryId}/{image.SecondCategoryId}/{image.Id}")">
-                                            <img src="@image.ThirdCategoryImage" alt="@image.ThirdCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            <img src="@(BaseServerUrl+image.ThirdCategoryImage)" alt="@image.ThirdCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
                                             <h6 class="text-dark">@image.ThirdCategoryName</h6>
                                         </a>
                                     </div>
@@ -49,10 +50,12 @@ else
 
     public bool IsProcessing { get; set; } = false;
     private List<ThirdCategoryDTO> ThirdCategoryList { get; set; } = new List<ThirdCategoryDTO>();
+    private string BaseServerUrl;
 
     protected override async Task OnInitializedAsync()
     {
         IsProcessing = true;
+        BaseServerUrl = _configuration["BaseServerUrl"];
         var response = await _thirdCategoryService.GetAllAsync<APIResponse>();
         if (response != null && response.IsSuccess)
         {
