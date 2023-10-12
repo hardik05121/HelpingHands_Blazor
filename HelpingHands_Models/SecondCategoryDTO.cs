@@ -11,7 +11,7 @@ namespace HelpingHands_Models
 
         [Required]
         [DisplayName("Second Category")]
-        [StringLength(15, MinimumLength = 3, ErrorMessage = "The field must be between 3 and 15 characters.")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "The field must be between 3 and 50 characters.")]
         public string SecondCategoryName { get; set; }
 
         [DisplayName("Second Category Image")]
