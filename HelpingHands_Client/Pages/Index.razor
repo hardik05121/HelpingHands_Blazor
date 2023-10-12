@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject IFirstCategoryService _firstCategoryService
-
+@inject IConfiguration _configuration
 
 @if (IsProcessing)
 {
@@ -24,7 +24,8 @@ else
                                     <div class="text-center">
                                         @* <a class="text-decoration-none" href="@Url.Action("SecondCategory", "Home", new { firstCategoryId = image.Id })"> *@
                                             <a class="text-decoration-none" href="@($"home/secondcategory/{image.Id}")">
-                                            <img src="@image.FirstCategoryImage" alt="@image.FirstCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
+                                            @* <img src="@image.FirstCategoryImage" alt="@image.FirstCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" /> *@
+                                            <img src="@(BaseServerUrl+image.FirstCategoryImage)" alt="@image.FirstCategoryName" style="border-radius: 5px; border: 1px solid #bbb9b9" height="100px" width="100px" />
                                             <h6 class="text-dark">@image.FirstCategoryName</h6>
                                         </a>
                                     </div>
@@ -43,10 +44,13 @@ else
 @code {
     public bool IsProcessing { get; set; } = false;
     private List<FirstCategoryDTO> FirstCategory { get; set; } = new List<FirstCategoryDTO>();
+    private string BaseServerUrl;
 
+   
     protected override async Task OnInitializedAsync()
     {
         IsProcessing = true;
+        BaseServerUrl = _configuration["BaseServerUrl"];
         var response = await _firstCategoryService.GetAllAsync<APIResponse>();
         if (response != null && response.IsSuccess)
         {
