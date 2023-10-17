@@ -17,6 +17,6 @@ namespace HelpingHands_Common
         }
 
         public static string SessionToken = "JWTToken";
-
+        public static string UserDetails = "UserDetails";
     }
 }

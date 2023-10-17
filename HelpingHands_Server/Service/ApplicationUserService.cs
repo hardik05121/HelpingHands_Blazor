@@ -27,15 +27,15 @@ namespace HelpingHands_Server.Service{
         //    });
         //}
 
-        //public Task<T> DeleteAsync<T>(int id, string token)
-        //{
-        //    return SendAsync<T>(new APIRequest()
-        //    {
-        //        ApiType = SD.ApiType.DELETE,
-        //        Url = categoryUrl + "/api/v1/ApplicationUserAPI/" + id,
-        //        Token = token
-        //    });
-        //}
+        public Task<T> DeleteAsync<T>(string id)
+        {
+            return SendAsync<T>(new APIRequest()
+            {
+                ApiType = SD.ApiType.DELETE,
+                Url = categoryUrl + "/api/v1/ApplicationUserAPI/" + id,
+                //Token = token
+            });
+        }
 
         public Task<T> GetAllAsync<T>()        {            return SendAsync<T>(new APIRequest()            {                ApiType = SD.ApiType.GET,                Url = categoryUrl + "/api/v1/applicationUserAPI/GetApplicationUsers",
                 //Token = token

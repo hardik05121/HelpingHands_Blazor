@@ -1,5 +1,7 @@
 ﻿@page "/home/briefdetail/{id:int}"
 @using HelpingHands_Models.ViewModels;
+@using HelpingHands_Client.Helper;
+@inject HttpClient HttpClient
 @inject ICompanyService _companyService
 @inject ICompanyImageService _companyImageService
 @inject ICompanyXAmenityService _companyXAmenityService
@@ -9,6 +11,7 @@
 @inject IReviewXCommentService _reviewXCommentService
 @inject IEnquiryService _enquiryService
 @inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
 
 
 @if (IsProcessing)
@@ -75,7 +78,7 @@ else
                                             <span class="visually-hidden">Next</span>
                                         </button>
                                     </div>
-                                   
+
                                 }
                             </div>
                             <div class="col-12 col-lg-5 ms-5  align-items-center ">
@@ -150,17 +153,24 @@ else
                                     </span>
                                 </div>
 
-                                <div class="pb-2 ">
-                                    <span class="text-dark text-opacity-50 fw-bold">
-                                        Description :-
-                                    </span>
-                                    <span class="" id="ReadMore">
-                                        @homeVM.Company.Description.Substring(0,10);
-                                    </span>
-                                    <span class="" id="ReadLess">
-                                        @homeVM.Company.Description
-                                    </span><span id="dots">...</span> <a class="" onclick="myFunction()" id="myBtn">Read more</a>
+                                @*  <div class="pb-2 ">
+                            <span class="text-dark text-opacity-50 fw-bold">
+                            Description :-
+                            </span>
+                            <span class="" id="ReadMore">
+                            @homeVM.Company.Description.Substring(0,10);
+                            </span>
+                            <span class="" id="ReadLess">
+                            @homeVM.Company.Description
+                            </span><span id="dots">...</span> <a class="" onclick="myFunction()" id="myBtn">Read more</a>
+                            </div>*@
+                                <div class="text-dark">
+                                    @((showReadMore ? homeVM.Company.Description : homeVM.Company.Description.Substring(0, 15)))
+
+                                    <span id="dots">...</span>
+                                    <a @onclick="ToggleReadMore" class="text-decoration-underline text-primary">@(showReadMore ? "Read less" : "Read more")</a>
                                 </div>
+
                             </div>
                         </div>
 
@@ -168,7 +178,7 @@ else
 
                         <div class="row">
                             <div class=" text-body">
-                                <h4 class="fw-bold m-2 p-2"> Contact Information</h4>
+                                <h4 class="fw-bold"> Contact Information</h4>
                                 <div class="d-flex">
                                     <div class="col-lg-2">
                                         <span class="fw-bold">
@@ -312,10 +322,9 @@ else
                         </div>
 
                         <hr />
-
                         <div class="row">
-                            <a class="btn btn-primary col-lg-3 justify-content-end" 
-                            href="@($"review/create/{homeVM.Company.Id}")">
+                            <a class="btn btn-primary col-lg-3 justify-content-end"
+                               href="@($"review/create/{homeVM.Company.Id}")">
                                 Add Review
                             </a>
                         </div>
@@ -402,38 +411,34 @@ else
                         <div class="wrapper">
                             <h2>Enquiry</h2>
                             <EditForm Model="homeVM" OnValidSubmit="CreateEnquiry">
-
-                                @* <InputText hidden @bind-Value="homeVM.Company.Id" />
-                                <InputText hidden @bind-Value="homeVM.Enquiry.Id" /> *@
-
                                 <div class="input-box pb-2">
-                                    <InputText @bind-Value="Enquiry.UserName" class="form-control" placeholder="Enter UserName" required />
-                                    <ValidationMessage For="()=>Enquiry.UserName"></ValidationMessage>
+
+                                    <InputText @bind-Value="homeVM.Enquiry.UserName" class="form-control" placeholder="Enter UserName" required />
+                                    <ValidationMessage For="@(() =>homeVM.Enquiry.UserName)"></ValidationMessage>
                                 </div>
 
                                 <div class="input-box pb-2">
-                                    <InputText @bind-Value="Enquiry.Email" class="form-control" placeholder="Enter Email" required />
-                                    <ValidationMessage For="()=>Enquiry.Email"></ValidationMessage>
+                                    <InputText @bind-Value="homeVM.Enquiry.Email" class="form-control" placeholder="Enter Email" required />
+                                    <ValidationMessage For="@(() => homeVM.Enquiry.Email)"></ValidationMessage>
                                 </div>
 
                                 <div class="input-box pb-2">
-
-                                    <InputNumber  @bind-Value="Enquiry.PhoneNumber" class="form-control" placeholder="Enter Your PhoneNumber" required />
-                                    <ValidationMessage For="()=>Enquiry.PhoneNumber"></ValidationMessage>
+                                    <InputNumber @bind-Value="homeVM.Enquiry.PhoneNumber" class="form-control" placeholder="Enter Your PhoneNumber" required />
+                                    <ValidationMessage For="@(() => homeVM.Enquiry.PhoneNumber)"></ValidationMessage>
                                 </div>
 
                                 <div class="input-box pb-2">
-                                    <InputText @bind-Value="Enquiry.Title" class="form-control" placeholder="Enter Title" required />
-                                    <ValidationMessage For="()=>Enquiry.Title"></ValidationMessage>
+                                    <InputText @bind-Value="homeVM.Enquiry.Title" class="form-control" placeholder="Enter Title" required />
+                                    <ValidationMessage For="@(() => homeVM.Enquiry.Title)"></ValidationMessage>
                                 </div>
 
                                 <div class="input-box pb-2">
-                                    <InputText @bind-Value="Enquiry.Description" class="form-control" placeholder=" Enter Description" required />
-                                    <ValidationMessage For="()=>Enquiry.Title"></ValidationMessage>
+                                    <InputText @bind-Value="homeVM.Enquiry.Description" class="form-control" placeholder="Enter Description" required />
+                                    <ValidationMessage For="@(() => homeVM.Enquiry.Description)"></ValidationMessage>
                                 </div>
 
                                 <div class="input-box button">
-                                    <button class="btn btn-primary">Create</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
                                 </div>
                             </EditForm>
                         </div>
@@ -467,9 +472,9 @@ else
         padding: 34px;
         border-radius: 6px;
         box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        /*  margin-left: 35%; */
-        /* margin-top: 5%; */
-        align-items: center;
+        / margin-left: 35%;
+        / / margin-top: 5%;
+        / align-items: center;
         justify-content: center;
     }
 
@@ -480,16 +485,16 @@ else
             color: #333;
         }
         /*
-                                    .wrapper h2::before {
-                                        content: '';
-                                        position: absolute;
-                                        left: 0;
-                                        bottom: 0;
-                                        height: 3px;
-                                        width: 20px;
-                                        border-radius: 12px;
-                                        background: #4070f4;
-                                    } */
+                                                        .wrapper h2::before {
+                                                            content: '';
+                                                            position: absolute;
+                                                            left: 0;
+                                                            bottom: 0;
+                                                            height: 3px;
+                                                            width: 20px;
+                                                            border-radius: 12px;
+                                                            background: #4070f4;
+                                                        } */
 
         .wrapper form {
             margin-top: 30px;
@@ -515,9 +520,9 @@ else
     }
 
     /*   .input-box input:focus,
-                            .input-box input:valid {
-                                border-color: #4070f4;
-                            } */
+                                                .input-box input:valid {
+                                                    border-color: #4070f4;
+                                                } */
 
     form .policy {
         display: flex;
@@ -535,8 +540,8 @@ else
         color: #fff;
         letter-spacing: 1px;
         border: none;
-/*         background: #4070f4; */
-        cursor: pointer;
+        / background: #4070f4;
+        / cursor: pointer;
     }
 
         .input-box.button input:hover {
@@ -565,8 +570,8 @@ else
 
     public bool IsProcessing { get; set; } = false;
 
+    bool showReadMore = false;
     private HomeVM homeVM { get; set; } = new HomeVM();
-    private EnquiryDTO Enquiry { get; set; } = new EnquiryDTO();
 
     protected override async Task OnInitializedAsync()
     {
@@ -616,23 +621,36 @@ else
         IsProcessing = false;
     }
 
+    void ToggleReadMore()
+    {
+        showReadMore = !showReadMore;
+    }
+
 
 
     private async Task CreateEnquiry()
     {
-        // var response = await _countryService.CreateAsync<APIResponse>(Country);
-        // if (response != null && response.IsSuccess)
-        // {
-        //     await _jsRuntime.ToastrSuccess("Data create sucessfully.");
-        //     _navigationManager.NavigateTo("country");
-        // }
-        // else
-        // {
-        //     if (response.ErrorMessages.Count > 0)
-        //     {
-        //         await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
-        //     }
-        // }
+        EnquiryDTO enquiryCreate = new EnquiryDTO();
+        enquiryCreate.Title = homeVM.Enquiry.Title;
+        enquiryCreate.PhoneNumber = homeVM.Enquiry.PhoneNumber;
+        enquiryCreate.Description = homeVM.Enquiry.Description;
+        enquiryCreate.UserName = homeVM.Enquiry.UserName;
+        enquiryCreate.Email = homeVM.Enquiry.Email;
+        enquiryCreate.CompanyID = homeVM.Company.Id;
+
+        var response = await _enquiryService.CreateAsync<APIResponse>(enquiryCreate);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Data create sucessfully.");
+            _navigationManager.NavigateTo("enquiry");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
 
     }
 }

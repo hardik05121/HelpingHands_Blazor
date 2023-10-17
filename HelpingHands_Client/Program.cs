@@ -1,4 +1,6 @@
+using Blazored.LocalStorage;
 using HelpingHands_Client;
+using HelpingHands_Client.Serivce;
 using HelpingHands_Client.Service;
 using HelpingHands_Client.Service.IService;
 using Microsoft.AspNetCore.Authentication;
@@ -17,8 +19,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //builder.Configuration.AddJsonFile("~/");
 var configuration = builder.Configuration.Build();
 builder.Services.AddSingleton<IConfiguration>(configuration);
-
-
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -67,18 +67,11 @@ builder.Services.AddScoped<IApplicationRoleService, ApplicationRoleService>();
 builder.Services.AddHttpClient<IApplicationUserRoleService, ApplicationUserRoleService>();
 builder.Services.AddScoped<IApplicationUserRoleService, ApplicationUserRoleService>();
 
-//builder.Services.AddHttpClient<IFirstCategoryUpload, FirstCategoryUpload>();
-//builder.Services.AddScoped<IFirstCategoryUpload, FirstCategoryUpload>();
-//builder.Services.AddHttpClient<ISecondCategoryUpload, SecondCategoryUpload>();
-//builder.Services.AddScoped<ISecondCategoryUpload, SecondCategoryUpload>();
-//builder.Services.AddHttpClient<IThirdCategoryUpload, ThirdCategoryUpload>();
-//builder.Services.AddScoped<IThirdCategoryUpload, ThirdCategoryUpload>();
-//builder.Services.AddHttpClient<ICompanyUpload, CompanyUpload>();
-//builder.Services.AddScoped<ICompanyUpload, CompanyUpload>();
-
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-//builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 await builder.Build().RunAsync();

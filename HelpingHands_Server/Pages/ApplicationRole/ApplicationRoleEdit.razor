@@ -1,0 +1,88 @@
+﻿@page "/applicationrole/update/{id}"
+@inject IJSRuntime _jsRuntime
+@inject IApplicationRoleService _applicationRoleService
+@inject NavigationManager _navigationManager
+@inject IMapper _mapper
+
+<div class="row my-2 py-1">
+    <h3 class="card-title text-primary mb-3 ml-3">Update Country</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="ApplicationRole" OnValidSubmit="UpdateApplicationRole">
+                <DataAnnotationsValidator />
+                @*<ValidationSummary/>*@
+                <div class="form-group">
+                    <label>ApplicationRole Name</label>
+                    <InputText @bind-Value="ApplicationRole.Name" class="form-control"></InputText>
+                    <ValidationMessage For="()=>ApplicationRole.Name"></ValidationMessage>
+                </div>
+                <div class="form-group col-6">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="ApplicationRole.IsChecked" class="form-check-input" checked></InputCheckbox>
+                        <label class="form-check-label">Is Checked</label>
+                    </div>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">Update</button>
+                    <NavLink href="applicationrole" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public string Id { get; set; }
+
+    private ApplicationRoleDTO ApplicationRole { get; set; } = new ApplicationRoleDTO();
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+    }
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _applicationRoleService.GetAsync<APIResponse>(Id);
+        if (response != null && response.IsSuccess)
+        {
+            ApplicationRole = JsonConvert.DeserializeObject<ApplicationRoleDTO>(Convert.ToString(response.Result));
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpdateApplicationRole()
+    {
+        var response = await _applicationRoleService.UpdateAsync<APIResponse>(ApplicationRole);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Country update sucessfully.");
+            _navigationManager.NavigateTo("applicationrole");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+    }
+}
+

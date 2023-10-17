@@ -1,7 +1,6 @@
-﻿@page "/enquiry"
+﻿@page "/applicationuser"
 @using HelpingHands_Models.Index;
-@inject IEnquiryService _enquiryService
-@inject ICompanyService _companyService
+@inject IApplicationUserService _applicationuserservice
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
 @* @using HelpingHands_Common
@@ -11,11 +10,11 @@
 <div class="container p-4 border border-dark p-3">
     <div class="row pb-2">
         <div class="col">
-            <h4 class="text-primary">Enquiry List</h4>
+            <h4 class="text-primary">ApplicationUser List</h4>
         </div>
-        @*    <div class="col-4 text-end pt-1">
-        <a href="amenity/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create Amenity</a>
-        </div>*@
+        <div class="col-4 text-end pt-1">
+            <a href="applicationuser/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create ApplicationUser</a>
+        </div>
     </div>
 
 
@@ -30,7 +29,7 @@
         </div>
     </div>
 
-    @if (enquiryIndexVM.enquiries.Any())
+    @if (applicationUserIndexVM.applicationUsers.Any())
     {
         <table class="table table-bordered table-striped">
             <thead>
@@ -39,27 +38,23 @@
                         <a @onclick="Pagination">User Name<i class="bi bi-arrow-down-up"></i></a>
                     </th>
                     <th>
-                        Company Name
-                    </th>
-                    <th>
-                        Is Active
+                        Id
                     </th>
                     <th></th>
                 </tr>
             </thead>
 
             <tbody>
-                @foreach (var item in enquiryIndexVM.enquiries)
+                @foreach (var item in applicationUserIndexVM.applicationUsers)
                 {
                     <tr>
                         <td>@item.UserName</td>
-                        <td>@item.Company.CompanyName</td>
-                        <td>@item.IsActive</td>
-                        @*
-                <td>
-                <NavLink href="@($"amenity/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
-                <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
-                </td>*@
+                        <td>@item.Id</td>
+
+                        <td>
+                            <NavLink href="@($"applicationuser/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
+                            <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -70,37 +65,37 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination">
 
-                @if (enquiryIndexVM.CurrentPage > 1)
+                @if (applicationUserIndexVM.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, enquiryIndexVM.CurrentPage-1)" aria-label="Previous">
+                        <a class="page-link" @onclick="() => HandlePageClick(applicationUserIndexVM.Term, applicationUserIndexVM.OrderBy, applicationUserIndexVM.CurrentPage-1)" aria-label="Previous">
 
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
 
-                @for (int i = 1; i <= enquiryIndexVM.TotalPages; i++)
+                @for (int i = 1; i <= applicationUserIndexVM.TotalPages; i++)
                 {
                     var page = i;
-                    if (i == enquiryIndexVM.CurrentPage)
+                    if (i == applicationUserIndexVM.CurrentPage)
                     {
                         <li class="page-item">
-                            <a class="page-link active bg-primary" style="color: white;" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, page)">@i</a>
+                            <a class="page-link active bg-primary" style="color: white;" @onclick="() => HandlePageClick(applicationUserIndexVM.Term, applicationUserIndexVM.OrderBy, page)">@i</a>
                         </li>
                     }
                     else
                     {
                         <li class="page-item">
-                            <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, page)">@i</a>
+                            <a class="page-link" @onclick="() => HandlePageClick(applicationUserIndexVM.Term, applicationUserIndexVM.OrderBy, page)">@i</a>
                         </li>
                     }
                 }
 
-                @if (enquiryIndexVM.CurrentPage < enquiryIndexVM.TotalPages)
+                @if (applicationUserIndexVM.CurrentPage < applicationUserIndexVM.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, enquiryIndexVM.CurrentPage+1)" aria-label="Next">
+                        <a class="page-link" @onclick="() => HandlePageClick(applicationUserIndexVM.Term, applicationUserIndexVM.OrderBy, applicationUserIndexVM.CurrentPage+1)" aria-label="Next">
 
                             <span aria-hidden="true">&raquo;</span>
                         </a>
@@ -131,9 +126,9 @@
 @code
 {
     // private APIResponse APIResponse { get; set; } = new APIResponse();
-    private EnquiryIndexVM enquiryIndexVM { get; set; } = new EnquiryIndexVM();
+    private ApplicationUserIndexVM applicationUserIndexVM { get; set; } = new ApplicationUserIndexVM();
     public bool IsLoading { get; set; }
-    private int DeleteId { get; set; } = 0;
+    private string DeleteId { get; set; } = "";
     private string term = "";
     private string orderBy = "";
     private int currentPage = 1;
@@ -150,16 +145,16 @@
     {
         IsLoading = true;
         StateHasChanged();
-        var response = await _enquiryService.EnquiryByPagination<APIResponse>(term, orderBy, currentPage);
+        var response = await _applicationuserservice.ApplicationUserByPagination<APIResponse>(term, orderBy, currentPage);
         if (response != null && response.IsSuccess)
         {
-            enquiryIndexVM = JsonConvert.DeserializeObject<EnquiryIndexVM>(Convert.ToString(response.Result));
+            applicationUserIndexVM = JsonConvert.DeserializeObject<ApplicationUserIndexVM>(Convert.ToString(response.Result));
         }
         IsLoading = false;
         StateHasChanged();
     }
 
-    private void HandleDelete(int id)
+    private void HandleDelete(string id)
     {
         DeleteId = id;
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
@@ -168,14 +163,14 @@
     public async Task ConfirmDelete_Click(bool isConfirmed)
     {
         IsLoading = true;
-        if (isConfirmed && DeleteId != 0)
+        if (isConfirmed && DeleteId != "")
         {
             try
             {
-                var response = await _enquiryService.DeleteAsync<APIResponse>(DeleteId);
+                var response = await _applicationuserservice.DeleteAsync<APIResponse>(DeleteId);
                 if (response != null && response.IsSuccess)
                 {
-                    await _jsRuntime.ToastrSuccess("Data first category sucessfully.");
+                    await _jsRuntime.ToastrSuccess("Data delete sucessfully.");
                     await LoadCategories(term, orderBy, currentPage);
                     await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
                 }
@@ -205,7 +200,7 @@
     }
     private async Task Pagination()
     {
-        this.orderBy = enquiryIndexVM.NameSortOrder;
+        this.orderBy = applicationUserIndexVM.NameSortOrder;
         await LoadCategories(term, orderBy, currentPage);
     }
 }
