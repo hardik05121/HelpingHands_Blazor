@@ -11,7 +11,7 @@ namespace HelpingHands_Models
         public string Password { get; set; }
         [Required]
         [Compare("Password", ErrorMessage = "The password not match.")]
-        [DisplayName("confirmpassword")]
+        [DisplayName("confirm password")]
         public string ConfirmPassword { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }

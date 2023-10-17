@@ -1,21 +1,19 @@
-﻿@page "/enquiry"
+﻿@page "/applicationrole"
 @using HelpingHands_Models.Index;
-@inject IEnquiryService _enquiryService
-@inject ICompanyService _companyService
+@inject IApplicationRoleService _applicationRoleService
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _NavigationManager
-@* @using HelpingHands_Common
- @attribute [Authorize(Roles = SD.Role_Admin)] *@
+
 
 <_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
 <div class="container p-4 border border-dark p-3">
     <div class="row pb-2">
         <div class="col">
-            <h4 class="text-primary">Enquiry List</h4>
+            <h4 class="text-primary">ApplicationRole List</h4>
         </div>
-        @*    <div class="col-4 text-end pt-1">
-        <a href="amenity/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create Amenity</a>
-        </div>*@
+        <div class="col-4 text-end pt-1">
+            <a href="applicationrole/create" class="btn btn-primary form-control"><i class="bi bi-plus-square-fill px-1"></i>Create ApplicationRole</a>
+        </div>
     </div>
 
 
@@ -30,36 +28,32 @@
         </div>
     </div>
 
-    @if (enquiryIndexVM.enquiries.Any())
+    @if (applicationRoleIndexVM.applicationRoles.Any())
     {
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>
-                        <a @onclick="Pagination">User Name<i class="bi bi-arrow-down-up"></i></a>
+                        <a @onclick="Pagination">ApplicationRole Name<i class="bi bi-arrow-down-up"></i></a>
                     </th>
                     <th>
-                        Company Name
-                    </th>
-                    <th>
-                        Is Active
+                        Is Checked
                     </th>
                     <th></th>
                 </tr>
             </thead>
 
             <tbody>
-                @foreach (var item in enquiryIndexVM.enquiries)
+                @foreach (var item in applicationRoleIndexVM.applicationRoles)
                 {
                     <tr>
-                        <td>@item.UserName</td>
-                        <td>@item.Company.CompanyName</td>
-                        <td>@item.IsActive</td>
-                        @*
-                <td>
-                <NavLink href="@($"amenity/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
-                <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
-                </td>*@
+                        <td>@item.Name</td>
+                        <td>@item.IsChecked</td>
+
+                        <td>
+                            <NavLink href="@($"applicationrole/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
+                            <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -70,37 +64,37 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination">
 
-                @if (enquiryIndexVM.CurrentPage > 1)
+                @if (applicationRoleIndexVM.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, enquiryIndexVM.CurrentPage-1)" aria-label="Previous">
+                        <a class="page-link" @onclick="() => HandlePageClick(applicationRoleIndexVM.Term, applicationRoleIndexVM.OrderBy, applicationRoleIndexVM.CurrentPage-1)" aria-label="Previous">
 
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
 
-                @for (int i = 1; i <= enquiryIndexVM.TotalPages; i++)
+                @for (int i = 1; i <= applicationRoleIndexVM.TotalPages; i++)
                 {
                     var page = i;
-                    if (i == enquiryIndexVM.CurrentPage)
+                    if (i == applicationRoleIndexVM.CurrentPage)
                     {
                         <li class="page-item">
-                            <a class="page-link active bg-primary" style="color: white;" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, page)">@i</a>
+                            <a class="page-link active bg-primary" style="color: white;" @onclick="() => HandlePageClick(applicationRoleIndexVM.Term, applicationRoleIndexVM.OrderBy, page)">@i</a>
                         </li>
                     }
                     else
                     {
                         <li class="page-item">
-                            <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, page)">@i</a>
+                            <a class="page-link" @onclick="() => HandlePageClick(applicationRoleIndexVM.Term, applicationRoleIndexVM.OrderBy, page)">@i</a>
                         </li>
                     }
                 }
 
-                @if (enquiryIndexVM.CurrentPage < enquiryIndexVM.TotalPages)
+                @if (applicationRoleIndexVM.CurrentPage < applicationRoleIndexVM.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" @onclick="() => HandlePageClick(enquiryIndexVM.Term, enquiryIndexVM.OrderBy, enquiryIndexVM.CurrentPage+1)" aria-label="Next">
+                        <a class="page-link" @onclick="() => HandlePageClick(applicationRoleIndexVM.Term, applicationRoleIndexVM.OrderBy, applicationRoleIndexVM.CurrentPage+1)" aria-label="Next">
 
                             <span aria-hidden="true">&raquo;</span>
                         </a>
@@ -131,9 +125,9 @@
 @code
 {
     // private APIResponse APIResponse { get; set; } = new APIResponse();
-    private EnquiryIndexVM enquiryIndexVM { get; set; } = new EnquiryIndexVM();
+    private ApplicationRoleIndexVM applicationRoleIndexVM { get; set; } = new ApplicationRoleIndexVM();
     public bool IsLoading { get; set; }
-    private int DeleteId { get; set; } = 0;
+    private string DeleteCountryId { get; set; } = "";
     private string term = "";
     private string orderBy = "";
     private int currentPage = 1;
@@ -150,32 +144,32 @@
     {
         IsLoading = true;
         StateHasChanged();
-        var response = await _enquiryService.EnquiryByPagination<APIResponse>(term, orderBy, currentPage);
+        var response = await _applicationRoleService.ApplicationRoleByPagination<APIResponse>(term, orderBy, currentPage);
         if (response != null && response.IsSuccess)
         {
-            enquiryIndexVM = JsonConvert.DeserializeObject<EnquiryIndexVM>(Convert.ToString(response.Result));
+            applicationRoleIndexVM = JsonConvert.DeserializeObject<ApplicationRoleIndexVM>(Convert.ToString(response.Result));
         }
         IsLoading = false;
         StateHasChanged();
     }
 
-    private void HandleDelete(int id)
+    private void HandleDelete(string id)
     {
-        DeleteId = id;
+        DeleteCountryId = id;
         _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
     }
 
     public async Task ConfirmDelete_Click(bool isConfirmed)
     {
         IsLoading = true;
-        if (isConfirmed && DeleteId != 0)
+        if (isConfirmed && DeleteCountryId != "")
         {
             try
             {
-                var response = await _enquiryService.DeleteAsync<APIResponse>(DeleteId);
+                var response = await _applicationRoleService.DeleteAsync<APIResponse>(DeleteCountryId);
                 if (response != null && response.IsSuccess)
                 {
-                    await _jsRuntime.ToastrSuccess("Data first category sucessfully.");
+                    await _jsRuntime.ToastrSuccess("Data delete sucessfully.");
                     await LoadCategories(term, orderBy, currentPage);
                     await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
                 }
@@ -205,7 +199,7 @@
     }
     private async Task Pagination()
     {
-        this.orderBy = enquiryIndexVM.NameSortOrder;
+        this.orderBy = applicationRoleIndexVM.NameSortOrder;
         await LoadCategories(term, orderBy, currentPage);
     }
 }

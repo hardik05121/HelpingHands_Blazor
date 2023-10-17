@@ -1,0 +1,139 @@
+﻿@page "/applicationuser/update/{id}"
+@using HelpingHands_Models.ViewModels;
+@inject IJSRuntime _jsRuntime
+@inject IApplicationRoleService _applicationroleservice
+@inject IApplicationUserRoleService _userRoleService;
+@inject IApplicationUserService _applicationuserservice
+@inject NavigationManager _navigationManager
+
+<div class="row my-2 py-1">
+    <h3 class="card-title text-primary mb-3 ml-3">Edit Role For @user.ApplicationUser.UserName</h3>
+
+    <div class="col-10">
+        @if (IsLoading)
+        {
+            <div class="text-center">
+
+                <img src="/images/loading.gif">
+            </div>
+        }
+        else
+        {
+            <EditForm Model="user" OnValidSubmit="UpdateApplicationUser">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>ApplicationUser Name</label>
+                    <InputText @bind-Value="user.ApplicationUser.UserName" class="form-control"></InputText>
+                    <ValidationMessage For="()=>user.ApplicationUser.UserName"></ValidationMessage>
+                </div>
+
+            @*     @if (user.ApplicationRoleList != null)
+                {
+                    @for (int index = 0; index < user.ApplicationRoleList.Count; index++)
+                    {
+                        <div class="col-2 m-2">
+                            <input type="checkbox" @bind="user.ApplicationRoleList[index].IsChecked" class="form-check-input" />
+                            <label class="form-check-label">@user.ApplicationRoleList[index].Name</label>
+                            <input type="hidden" value="@user.ApplicationRoleList[index].Id" />
+                            <input type="hidden" value="@user.ApplicationRoleList[index].Name" />
+                            <br />
+                        </div>
+                    }
+                } *@
+
+                @if (user.ApplicationRoleList != null)
+                {
+                    @for (int index = 0; index < user.ApplicationRoleList.Count; index++)
+                    {
+                        if (index < user.ApplicationRoleList.Count)
+                        {
+                            <div class="col-2 m-2" key="@user.ApplicationRoleList[index].Id">
+                                <input type="checkbox" @bind="user.ApplicationRoleList[index].IsChecked" class="form-check-input" />
+                                <label class="form-check-label">@user.ApplicationRoleList[index].Name</label>
+                                <input type="hidden" value="@user.ApplicationRoleList[index].Id" />
+                                <input type="hidden" value="@user.ApplicationRoleList[index].Name" />
+                                <br />
+                            </div>
+                        }
+                    }
+                }
+
+
+                <div class="form-group py-2">
+                    <button class="btn btn-primary">update</button>
+                    <NavLink href="applicationuser" class="btn btn-secondary">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public string Id { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    private HomeVM homeVM { get; set; } = new HomeVM();
+
+    private UserVM user { get; set; } = new UserVM();
+    private List<ApplicationUserRoleDTO> ApplicationUserRoleList { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var response = await _applicationuserservice.GetAsync<APIResponse>(Id);
+        if (response != null && response.IsSuccess)
+        {
+            user.ApplicationUser = JsonConvert.DeserializeObject<ApplicationUserDTO>(Convert.ToString(response.Result));
+        }
+
+        var UserRoleList = await _userRoleService.GetAllAsync<APIResponse>();
+        if (UserRoleList != null && UserRoleList.IsSuccess)
+        {
+            var list = JsonConvert.DeserializeObject<List<ApplicationUserRoleDTO>>(Convert.ToString(UserRoleList.Result));
+            ApplicationUserRoleList = list.Where(x => x.UserId == Id).ToList();
+        }
+
+        var ApplicationRoleList = await _applicationroleservice.GetAllAsync<APIResponse>();
+        if (ApplicationRoleList != null && ApplicationRoleList.IsSuccess)
+        {
+            user.ApplicationRoleList = JsonConvert.DeserializeObject<List<ApplicationRoleDTO>>
+                    (Convert.ToString(ApplicationRoleList.Result)).Select(i => new ApplicationRoleDTO
+                        {
+                            Name = i.Name,
+                            Id = i.Id,
+                            IsChecked = ApplicationUserRoleList.Where(x => x.RoleId == i.Id && x.UserId == Id).Any()
+                        }).ToList();
+        }
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+
+    private async Task UpdateApplicationUser()
+    {
+        var response = await _applicationuserservice.UpdateAsync<APIResponse>(user);
+        if (response != null && response.IsSuccess)
+        {
+            await _jsRuntime.ToastrSuccess("Data create sucessfully.");
+            _navigationManager.NavigateTo("applicationuser");
+        }
+        else
+        {
+            if (response.ErrorMessages.Count > 0)
+            {
+                await _jsRuntime.ToastrError(response.ErrorMessages.FirstOrDefault());
+            }
+        }
+
+    }
+}
