@@ -32,9 +32,5 @@ namespace HelpingHands_DataAccess
         [Required]
         [DisplayName("Brif Description Of Your Enquiry")]
         public string Description { get; set; }
-
-        
-
-
     }
 }

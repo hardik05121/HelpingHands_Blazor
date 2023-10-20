@@ -23,19 +23,18 @@ namespace HelpingHands_Models
 		[DataType(DataType.EmailAddress)]
 		[RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,4}", ErrorMessage = "Invalid Email Address")]
 		public string Email { get; set; }
+
         [Required]
         [DisplayName("User Phone Number")]
         [RegularExpression(@"^\d{9}$", ErrorMessage = "The phone number must be exactly 9 digits.")]
         public int PhoneNumber { get; set; }
+
         [Required]
         [DisplayName("Enquiry Title")]
         public string Title { get; set; }
+
         [Required]
         [DisplayName("Brif Description Of Your Enquiry")]
         public string Description { get; set; }
-
-        public bool IsActive { get; set; }
-
-
     }
 }

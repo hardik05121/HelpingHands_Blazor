@@ -50,9 +50,10 @@ namespace HelpingHands_Client.Pages.Authentication
                 LoginResponseDTO model = JsonConvert.DeserializeObject<LoginResponseDTO>(Convert.ToString(response.Result));
                 if (!string.IsNullOrEmpty(model?.Token))
                 {
-                    //await _localStorage.SetItemAsync(SD.SessionToken, model.Token);
-                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", SD.SessionToken, model.Token);
-                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", SD.UserDetails, model.User);
+                    await _localStorage.SetItemAsync(SD.SessionToken, model.Token);
+                    await _localStorage.SetItemAsync(SD.UserDetails, model.User);
+                    //await _jsRuntime.InvokeVoidAsync("localStorage.setItem", SD.SessionToken, model.Token);
+                    //await _jsRuntime.InvokeVoidAsync("localStorage.setItem", SD.UserDetails, model.User);
 
                     var identity = new ClaimsIdentity(new[]
                     {

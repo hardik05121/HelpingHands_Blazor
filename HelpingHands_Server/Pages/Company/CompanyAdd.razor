@@ -66,7 +66,7 @@
                         <ValidationMessage For="()=>Company.ThirdCategoryId"></ValidationMessage>
                     </div>
 
-                      <div class="form-group col-4">
+                    <div class="form-group col-4">
                         <label>Country</label>
                         <InputSelect @bind-Value="Company.CountryId" class="form-select">
                             <option value="0" disabled="disabled" selected>--Select Country--</option>
@@ -102,7 +102,7 @@
                         <ValidationMessage For="()=>Company.CityId"></ValidationMessage>
                     </div>
                 </div>
-                 <div class="form-group">
+                <div class="form-group">
                     <label>Address</label>
                     <SfRichTextEditor @bind-Value="Company.Address"></SfRichTextEditor>
                     <ValidationMessage For="()=>Company.Address"></ValidationMessage>
@@ -112,58 +112,60 @@
                     <SfRichTextEditor @bind-Value="Company.Description"></SfRichTextEditor>
                     <ValidationMessage For="()=>Company.Description"></ValidationMessage>
                 </div>
-                <div class="form-group col-6">
-                    <label>Certificate</label>
-                    <InputText @bind-Value="Company.Certificate" class="form-control"></InputText>
-                    <ValidationMessage For="()=>Company.Certificate"></ValidationMessage>
-                </div>
-                <div class="form-group col-6">
-                    <label>Establish Date</label>
-                    <InputDate @bind-Value="Company.EstablishDate" class="form-control"></InputDate>
-                    <ValidationMessage For="()=>Company.EstablishDate"></ValidationMessage>
-                </div>
-                <div class="form-group col-6">
-                    <label>Phone Number</label>
-                    <InputText @bind-Value="Company.PhoneNumber" class="form-control"></InputText>
-                    <ValidationMessage For="()=>Company.PhoneNumber"></ValidationMessage>
-                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-6">
+                        <label>Certificate</label>
+                        <InputText @bind-Value="Company.Certificate" class="form-control"></InputText>
+                        <ValidationMessage For="()=>Company.Certificate"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Establish Date</label>
+                        <InputDate @bind-Value="Company.EstablishDate" class="form-control"></InputDate>
+                        <ValidationMessage For="()=>Company.EstablishDate"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Phone Number</label>
+                        <InputText @bind-Value="Company.PhoneNumber" class="form-control"></InputText>
+                        <ValidationMessage For="()=>Company.PhoneNumber"></ValidationMessage>
+                    </div>
 
-                <div class="form-group col-6">
-                    <label>Email</label>
-                    <InputText @bind-Value="Company.Email" class="form-control"></InputText>
-                    <ValidationMessage For="()=>Company.Email"></ValidationMessage>
-                </div>
-                
-                <div class="form-group">
-                    <label>WhatsApp</label>
-                    <InputText @bind-Value="Company.WhatsApp" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
-                    <ValidationMessage For="()=>Company.WhatsApp"></ValidationMessage>
-                </div>
-                <div class="form-group">
-                    <label>Instagram</label>
-                    <InputText @bind-Value="Company.InstagramId" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
-                    <ValidationMessage For="()=>Company.InstagramId"></ValidationMessage>
-                </div>
-                 <div class="form-group">
-                    <label>Facebook</label>
-                    <InputText @bind-Value="Company.Facebook" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
-                    <ValidationMessage For="()=>Company.Facebook"></ValidationMessage>
-                </div>
-                 <div class="form-group">
-                    <label>Website</label>
-                    <InputText @bind-Value="Company.Website" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
-                    <ValidationMessage For="()=>Company.Website"></ValidationMessage>
-                </div>
-                <div class="form-group">
-                    <label>Twitter</label>
-                    <InputText @bind-Value="Company.Twitter" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
-                    <ValidationMessage For="()=>Company.Twitter"></ValidationMessage>
-                </div>
+                    <div class="form-group col-6">
+                        <label>Email</label>
+                        <InputText @bind-Value="Company.Email" class="form-control"></InputText>
+                        <ValidationMessage For="()=>Company.Email"></ValidationMessage>
+                    </div>
 
-                <div class="form-group col-6">
-                    <div class="form-check">
-                        <InputCheckbox @bind-Value="Company.IsActive" class="form-check-input" checked></InputCheckbox>
-                        <label class="form-check-label">Is Active</label>
+                    <div class="form-group col-6">
+                        <label>WhatsApp</label>
+                        <InputText @bind-Value="Company.WhatsApp" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                        <ValidationMessage For="()=>Company.WhatsApp"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Instagram</label>
+                        <InputText @bind-Value="Company.InstagramId" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                        <ValidationMessage For="()=>Company.InstagramId"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Facebook</label>
+                        <InputText @bind-Value="Company.Facebook" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                        <ValidationMessage For="()=>Company.Facebook"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Website</label>
+                        <InputText @bind-Value="Company.Website" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                        <ValidationMessage For="()=>Company.Website"></ValidationMessage>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Twitter</label>
+                        <InputText @bind-Value="Company.Twitter" class="form-control" placeholder="start like :https://web. OR http://www."></InputText>
+                        <ValidationMessage For="()=>Company.Twitter"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <div class="form-check pt-4">
+                            <InputCheckbox @bind-Value="Company.IsActive" class="form-check-input" checked></InputCheckbox>
+                            <label class="form-check-label">Is Active</label>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group py-2">

@@ -9,10 +9,10 @@ namespace HelpingHands_Models.ViewModels
         {
             ApplicationUser = new ApplicationUserDTO();
             //RegisterationRequest = new RegisterationRequestDTO();
-            ApplicationUserRole = new ApplicationUserRoleDTO();
+           // ApplicationUserRole = new ApplicationUserRoleDTO();
         }
         public ApplicationUserDTO ApplicationUser { get; set; }
-        public ApplicationUserRoleDTO ApplicationUserRole { get; set; }
+       // public ApplicationUserRoleDTO ApplicationUserRole { get; set; }
         //public RegisterationRequestDTO RegisterationRequest { get; set; }
 
         [ValidateNever]

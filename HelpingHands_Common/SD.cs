@@ -16,7 +16,7 @@ namespace HelpingHands_Common
             DELETE
         }
 
-        public static string SessionToken = "JWTToken";
-        public static string UserDetails = "UserDetails";
+        public const string SessionToken = "JWTToken";
+        public const string UserDetails = "UserDetails";
     }
 }

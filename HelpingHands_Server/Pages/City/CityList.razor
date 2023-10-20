@@ -65,7 +65,7 @@
                         <td>@item.IsActive</td>
 
                         <td>
-                            <NavLink href="@($"city/edit/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
+                            <NavLink href="@($"city/update/{item.Id}")" class="btn-primary btn"><i class="bi bi-pencil-square"></i>Edit</NavLink>
                             <button class="btn btn-danger" @onclick="()=>HandleDelete(item.Id)"><i class="bi bi-trash"></i>Delete</button>
                         </td>
                     </tr>

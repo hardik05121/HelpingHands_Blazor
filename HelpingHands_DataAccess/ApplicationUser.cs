@@ -13,7 +13,7 @@ namespace HelpingHands_DataAccess
 		public string? Address { get; set; }
         public string PassWord { get; set; }
         [NotMapped]
-        public string Role { get; set; }    
+        public string? Role { get; set; }    
     }
 
 }

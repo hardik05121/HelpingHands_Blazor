@@ -1,5 +1,6 @@
 ﻿@inject ISyncLocalStorageService _localStorage
-@* @implements IDisposable *@
+@inject IAuthService _authSerivce
+
 
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -9,25 +10,25 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        @*     <form class="d-flex"> *@
+       @*    <form class="d-flex">  *@
             <ul class="navbar-nav align-items-end">
                     <AuthorizeView>
-                        <Authorized>
-                          @*   <li class="nav-item p-0">
-                                <NavLink class="nav-link" href="#">
-                                    <span class="p-2">
-                                        Hello, @context.User.Identity.Name
-                                    </span>
-                                </NavLink>
-                            </li> *@
-                            <li class="nav-item p-0">
-                                <NavLink class="nav-link" href="logout">
-                                    <span class="p-2">
-                                        Logout
-                                    </span>
-                                </NavLink>
-                            </li>
-                        </Authorized>
+                    <Authorized>
+                        <li class="nav-item p-0">
+                            <NavLink class="nav-link" href="#">
+                                <span class="p-2">
+                                    Hello, @userName
+                                </span>
+                            </NavLink>
+                        </li>
+                        <li class="nav-item p-0">
+                            <NavLink class="nav-link" href="logout">
+                                <span class="p-2">
+                                    Logout
+                                </span>
+                            </NavLink>
+                        </li>
+                    </Authorized>
                         <NotAuthorized>
                             <li class="nav-item p-0">
                                 <NavLink class="nav-link" href="register">
@@ -47,13 +48,15 @@
                     </AuthorizeView>
 z
                 </ul>
-            @* </form> *@
+             @* </form> *@
         </div>
     </div>
 </nav>
 
 @code {
     private bool collapseNavMenu = true;
+    public bool IsLoading { get; set; }
+    private string userName;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -61,4 +64,19 @@ z
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    protected override void OnInitialized()
+    {
+        string serializedUserDetails = _localStorage.GetItem<string>(SD.UserDetails);
+
+        if (!string.IsNullOrEmpty(serializedUserDetails))
+        {
+            var userDetails = JsonConvert.DeserializeObject<ApplicationUserDTO>(serializedUserDetails);
+
+            userName = userDetails.UserName;
+        }
+    }
 }
+
+
+
