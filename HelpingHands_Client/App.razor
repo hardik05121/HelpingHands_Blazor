@@ -6,7 +6,7 @@
                     <p>Please wait, we are authorizring the user!</p>
                 </Authorizing>
                 <NotAuthorized>
-                    <HelpingHands_Client.Pages.Authentication.RedirectToLogin></HelpingHands_Client.Pages.Authentication.RedirectToLogin>
+                    <RedirectToLogin></RedirectToLogin>
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -19,18 +19,3 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
-
-
-@* <Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
- *@

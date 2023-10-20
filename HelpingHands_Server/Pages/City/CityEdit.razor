@@ -57,15 +57,10 @@
                         <label class="form-check-label">Is Active</label>
                     </div>
                 </div>
-                @* <div class="form-group col-6">
-            <div class="form-check">
-            <InputCheckbox @bind-Value="Brand.IsActive" class="form-check-input" checked></InputCheckbox>
-            <label class="form-check-label">Is Active</label>
-            </div>
-            </div> *@
+
                 <div class="form-group py-2">
                     <button class="btn btn-primary">Update</button>
-                    <NavLink href="state" class="btn btn-secondary">Back to Index</NavLink>
+                    <NavLink href="city" class="btn btn-secondary">Back to Index</NavLink>
                 </div>
             </EditForm>
         }
@@ -88,10 +83,10 @@
     {
         if (firstRender)
         {
-            await LoadCountry();
+            await LoadCity();
         }
     }
-    private async Task LoadCountry()
+    private async Task LoadCity()
     {
         IsLoading = true;
         StateHasChanged();
@@ -127,7 +122,7 @@
         if (response != null && response.IsSuccess)
         {
             await _jsRuntime.ToastrSuccess("City Update sucessfully.");
-            _navigationManager.NavigateTo("state");
+            _navigationManager.NavigateTo("city");
         }
         else
         {
@@ -138,9 +133,4 @@
         }
 
     }
-
-
-
-
-
 }

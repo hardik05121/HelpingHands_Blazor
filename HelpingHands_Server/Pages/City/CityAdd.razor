@@ -26,6 +26,19 @@
                     <ValidationMessage For="()=>City.CityName"></ValidationMessage>
                 </div>
 
+                     <div class="form-group col-6">
+                    <label>Country Name</label>
+                    <InputSelect @bind-Value="City.CountryId" class="form-select" @onchange="LoadStatesForCountry">
+                        <option value="0" disabled="disabled" selected>--Select Country--</option>
+                        @foreach (var cat in CountryList)
+                        {
+                            <option value="@cat.Id">@cat.CountryName</option>
+                        }
+
+                    </InputSelect>
+                    <ValidationMessage For="()=>City.CountryId"></ValidationMessage>
+                </div>
+
                 <div class="form-group col-6">
                     <label>State Name</label>
                     <InputSelect @bind-Value="City.StateId" class="form-select">
@@ -39,18 +52,7 @@
                     <ValidationMessage For="()=>City.StateId"></ValidationMessage>
                 </div>
 
-                <div class="form-group col-6">
-                    <label>Country Name</label>
-                    <InputSelect @bind-Value="City.CountryId" class="form-select">
-                        <option value="0" disabled="disabled" selected>--Select Country--</option>
-                        @foreach (var cat in CountryList)
-                        {
-                            <option value="@cat.Id">@cat.CountryName</option>
-                        }
-
-                    </InputSelect>
-                    <ValidationMessage For="()=>City.CountryId"></ValidationMessage>
-                </div>
+           
                 <div class="form-group col-6">
                     <div class="form-check">
                         <InputCheckbox @bind-Value="City.IsActive" class="form-check-input" checked></InputCheckbox>
@@ -58,12 +60,6 @@
                     </div>
                 </div>
 
-                @* <div class="form-group col-6">
-            <div class="form-check">
-            <InputCheckbox @bind-Value="Brand.IsActive" class="form-check-input" checked></InputCheckbox>
-            <label class="form-check-label">Is Active</label>
-            </div>
-            </div> *@
                 <div class="form-group py-2">
                     <button class="btn btn-primary">Create</button>
                     <NavLink href="state" class="btn btn-secondary">Back to Index</NavLink>
@@ -83,6 +79,7 @@
     private List<CountryDTO> CountryList { get; set; } = new List<CountryDTO>();
 
     public bool IsLoading { get; set; }
+    private string inputValue;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -130,5 +127,29 @@
             }
         }
 
+    }
+
+    private async Task LoadStatesForCountry(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int countryId))
+        {
+            IsLoading = true;
+            StateList = await GetStatesForCountry(countryId);
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task<List<StateDTO>> GetStatesForCountry(int countryId)
+    {
+        var response = await _stateService.GetAllAsync<APIResponse>();
+        if (response != null && response.IsSuccess)
+        {
+            StateList = JsonConvert.DeserializeObject<List<StateDTO>>(Convert.ToString(response.Result));
+            StateList = StateList.Where(u => u.CountryId == countryId).ToList();
+            return (StateList);
+        }
+        return new List<StateDTO>();
     }
 }

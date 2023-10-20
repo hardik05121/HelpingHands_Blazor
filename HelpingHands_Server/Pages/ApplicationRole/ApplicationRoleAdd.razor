@@ -24,12 +24,6 @@
                     <InputText @bind-Value="ApplicationRole.Name" class="form-control"></InputText>
                     <ValidationMessage For="()=>ApplicationRole.Name"></ValidationMessage>
                 </div>
-                <div class="form-group col-6">
-                    <div class="form-check">
-                        <InputCheckbox @bind-Value="ApplicationRole.IsChecked" class="form-check-input" checked></InputCheckbox>
-                        <label class="form-check-label">Is Checked</label>
-                    </div>
-                </div>
                 <div class="form-group py-2">
                     <button class="btn btn-primary">Create</button>
                     <NavLink href="applicationrole" class="btn btn-secondary">Back to Index</NavLink>

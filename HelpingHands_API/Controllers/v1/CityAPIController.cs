@@ -13,11 +13,12 @@ using HelpingHands_Business.Repository.IRepostiory;
 using HelpingHands_DataAccess;
 using HelpingHands_Models;
 using HelpingHands_Models.Index;
+using Azure;
 
 namespace HelpingHands_API.Controllers.v1
 {
-	[Route("api/v{version:apiVersion}/[Controller]/[Action]")]
-	[ApiController]
+    [Route("api/v{version:apiVersion}/[Controller]/[Action]")]
+    [ApiController]
     [ApiVersion("1.0")]
 
     public class CityAPIController : ControllerBase
@@ -34,8 +35,8 @@ namespace HelpingHands_API.Controllers.v1
         }
 
 
-		[HttpGet(Name = "GetCitys")]
-		[ResponseCache(CacheProfileName = "Default30")]
+        [HttpGet(Name = "GetCitys")]
+        [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,7 +61,7 @@ namespace HelpingHands_API.Controllers.v1
                 if (!string.IsNullOrEmpty(search))
                 {
                     categoryList = categoryList.Where(u => u.CityName.ToLower().Contains(search) ||
-                                                 u.Country.CountryName.ToLower().Contains(search)|| 
+                                                 u.Country.CountryName.ToLower().Contains(search) ||
                                                  u.State.StateName.ToLower().Contains(search));
 
                 }
@@ -101,8 +102,8 @@ namespace HelpingHands_API.Controllers.v1
 
                 if (!string.IsNullOrEmpty(term))
                 {
-                    List = List.Where(u => u.CityName.ToLower().Contains(term) || 
-                    u.State.StateName.ToLower().Contains(term)|| u.Country.CountryName.ToLower().Contains(term)).ToList();
+                    List = List.Where(u => u.CityName.ToLower().Contains(term) ||
+                    u.State.StateName.ToLower().Contains(term) || u.Country.CountryName.ToLower().Contains(term)).ToList();
                 }
 
                 switch (orderBy)
@@ -253,7 +254,7 @@ namespace HelpingHands_API.Controllers.v1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("{id:int}", Name = "DeleteCity")]
-      
+
         public async Task<ActionResult<APIResponse>> DeleteCity(int id)
         {
             try
@@ -299,14 +300,15 @@ namespace HelpingHands_API.Controllers.v1
                 }
                 if (await _unitOfWork.Country.GetAsync(u => u.Id == updateDTO.CountryId) == null)
                 {
-                    ModelState.AddModelError("ErrorMessages", "Category ID is Invalid!");
+                    ModelState.AddModelError("ErrorMessages", "Country ID is Invalid!");
                     return BadRequest(ModelState);
                 }
-                if (await _unitOfWork.Country.GetAsync(u => u.Id == updateDTO.StateId) == null)
+                if (await _unitOfWork.State.GetAsync(u => u.Id == updateDTO.StateId) == null)
                 {
-                    ModelState.AddModelError("ErrorMessages", "Category ID is Invalid!");
+                    ModelState.AddModelError("ErrorMessages", "State ID is Invalid!");
                     return BadRequest(ModelState);
                 }
+
                 City model = _mapper.Map<City>(updateDTO);
                 await _unitOfWork.City.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.NoContent;

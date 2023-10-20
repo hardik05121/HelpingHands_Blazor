@@ -423,7 +423,7 @@ else
                                 </div>
 
                                 <div class="input-box pb-2">
-                                    <InputNumber @bind-Value="homeVM.Enquiry.PhoneNumber" class="form-control" placeholder="Enter Your PhoneNumber" required />
+                                    <InputNumber  @bind-Value="homeVM.Enquiry.PhoneNumber"  class="form-control" placeholder="Enter Your PhoneNumber" required />
                                     <ValidationMessage For="@(() => homeVM.Enquiry.PhoneNumber)"></ValidationMessage>
                                 </div>
 
@@ -626,8 +626,6 @@ else
         showReadMore = !showReadMore;
     }
 
-
-
     private async Task CreateEnquiry()
     {
         EnquiryDTO enquiryCreate = new EnquiryDTO();
@@ -642,7 +640,13 @@ else
         if (response != null && response.IsSuccess)
         {
             await _jsRuntime.ToastrSuccess("Data create sucessfully.");
-            _navigationManager.NavigateTo("enquiry");
+            // Clear the form data
+            homeVM.Enquiry = new EnquiryDTO();
+
+            // Trigger a UI update to re-render the form with cleared data
+            StateHasChanged();
+
+            _navigationManager.NavigateTo($"home/briefdetail/{Id}");
         }
         else
         {
